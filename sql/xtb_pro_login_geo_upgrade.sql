@@ -1,0 +1,9 @@
+USE xtb_pro;
+
+ALTER TABLE login_log
+  ADD COLUMN country_name VARCHAR(100) DEFAULT NULL AFTER ip,
+  ADD COLUMN region_name VARCHAR(100) DEFAULT NULL AFTER country_name,
+  ADD COLUMN city_name VARCHAR(100) DEFAULT NULL AFTER region_name,
+  ADD COLUMN org_name VARCHAR(150) DEFAULT NULL AFTER city_name,
+  ADD COLUMN location_text VARCHAR(255) DEFAULT NULL AFTER org_name;
+

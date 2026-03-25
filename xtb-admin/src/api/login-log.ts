@@ -7,6 +7,11 @@ export interface LoginLogItem {
   role?: string;
   loginStatus: number;
   ip?: string;
+  countryName?: string;
+  regionName?: string;
+  cityName?: string;
+  orgName?: string;
+  locationText?: string;
   userAgent?: string;
   message?: string;
   loginAt: string;
@@ -21,4 +26,3 @@ export interface LoginLogItem {
 export function getLoginLogList() {
   return request<{ code: number; message: string; data: LoginLogItem[] }>('/admin/login-log/list');
 }
-

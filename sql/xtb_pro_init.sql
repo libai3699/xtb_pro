@@ -170,6 +170,11 @@ CREATE TABLE IF NOT EXISTS login_log (
   role VARCHAR(30) DEFAULT NULL,
   login_status TINYINT NOT NULL DEFAULT 1,
   ip VARCHAR(64) DEFAULT NULL,
+  country_name VARCHAR(100) DEFAULT NULL,
+  region_name VARCHAR(100) DEFAULT NULL,
+  city_name VARCHAR(100) DEFAULT NULL,
+  org_name VARCHAR(150) DEFAULT NULL,
+  location_text VARCHAR(255) DEFAULT NULL,
   user_agent VARCHAR(500) DEFAULT NULL,
   message VARCHAR(255) DEFAULT NULL,
   login_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -183,4 +188,3 @@ CREATE TABLE IF NOT EXISTS login_log (
 INSERT INTO admin_user (username, password, name, mobile, role, status)
 VALUES ('admin', '123456', '系统管理员', '13800000000', 'admin', 1)
 ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP;
-

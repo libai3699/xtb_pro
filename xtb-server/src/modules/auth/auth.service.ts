@@ -2,6 +2,7 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import type { Request } from 'express';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { verifyPassword } from '../../common/utils/auth.util';
+import { resolveIpGeo } from '../../common/utils/ip-geo.util';
 import { getRequestIp, getRequestUserAgent } from '../../common/utils/request.util';
 import { serializeValue } from '../../common/utils/serialize.util';
 import { AdminLoginDto, AppLoginDto, AppRegisterDto } from './dto/login.dto';
@@ -175,11 +176,21 @@ export class AuthService {
     role?: string;
     loginStatus: number;
     ip?: string;
+    countryName?: string;
+    regionName?: string;
+    cityName?: string;
+    orgName?: string;
+    locationText?: string;
     userAgent?: string;
     message?: string;
   }) {
+    const ipGeo = await resolveIpGeo(data.ip);
+
     await this.prisma.loginLog.create({
-      data,
+      data: {
+        ...data,
+        ...ipGeo,
+      },
     });
   }
 }

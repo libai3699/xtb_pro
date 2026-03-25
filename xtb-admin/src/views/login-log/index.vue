@@ -17,6 +17,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="ip" label="IP" min-width="130" />
+      <el-table-column prop="locationText" label="定位" min-width="260" show-overflow-tooltip />
       <el-table-column prop="userAgent" label="User-Agent" min-width="260" show-overflow-tooltip />
       <el-table-column prop="message" label="结果" min-width="150" />
     </el-table>
@@ -51,4 +52,3 @@ onMounted(fetchList);
   margin-bottom: 16px;
 }
 </style>
-

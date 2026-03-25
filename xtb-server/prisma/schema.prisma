@@ -222,6 +222,11 @@ model LoginLog {
   role        String?    @db.VarChar(30)
   loginStatus Int        @default(1) @map("login_status") @db.TinyInt
   ip          String?    @db.VarChar(64)
+  countryName String?    @map("country_name") @db.VarChar(100)
+  regionName  String?    @map("region_name") @db.VarChar(100)
+  cityName    String?    @map("city_name") @db.VarChar(100)
+  orgName     String?    @map("org_name") @db.VarChar(150)
+  locationText String?   @map("location_text") @db.VarChar(255)
   userAgent   String?    @map("user_agent") @db.VarChar(500)
   message     String?    @db.VarChar(255)
   loginAt     DateTime   @default(now()) @map("login_at") @db.DateTime(0)
