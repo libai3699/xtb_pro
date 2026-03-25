@@ -1,0 +1,41 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "校推宝Pro"
+      }
+    },
+    {
+      "path": "pages/agent/home",
+      "style": {
+        "navigationBarTitleText": "代理首页"
+      }
+    },
+    {
+      "path": "pages/student/home",
+      "style": {
+        "navigationBarTitleText": "学生首页"
+      }
+    },
+    {
+      "path": "pages/campaign/detail",
+      "style": {
+        "navigationBarTitleText": "活动详情"
+      }
+    },
+    {
+      "path": "pages/my/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "校推宝Pro",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f7fb"
+  }
+}
+

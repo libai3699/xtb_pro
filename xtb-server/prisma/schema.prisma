@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  username  String   @unique(map: "username") @db.VarChar(50)
+  password  String   @db.VarChar(255)
+  name      String   @db.VarChar(50)
+  mobile    String?  @db.VarChar(20)
+  role      String   @default("admin") @db.VarChar(30)
+  status    Int      @default(1) @db.TinyInt
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+
+  @@map("admin_user")
+}
+
+model AppUser {
+  id            BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  role          String         @db.VarChar(20)
+  nickname      String?        @db.VarChar(50)
+  avatar        String?        @db.VarChar(255)
+  mobile        String?        @db.VarChar(20)
+  openid        String?        @db.VarChar(100)
+  unionid       String?        @db.VarChar(100)
+  status        Int            @default(1) @db.TinyInt
+  createdAt     DateTime       @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  agentProfile  AgentProfile?
+  agentLeads    Lead[]         @relation("LeadAgentUser")
+  studentLeads  Lead[]         @relation("LeadStudentUser")
+  agentOrders   Order[]        @relation("OrderAgentUser")
+  studentOrders Order[]        @relation("OrderStudentUser")
+  shares        CampaignShare[]
+  agentStats    StatsDaily[]   @relation("StatsAgentUser")
+
+  @@index([role], map: "idx_app_user_role")
+  @@index([mobile], map: "idx_app_user_mobile")
+  @@map("app_user")
+}
+
+model AgentProfile {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt   @unique(map: "uk_agent_user_id") @map("user_id") @db.UnsignedBigInt
+  realName   String   @map("real_name") @db.VarChar(50)
+  schoolName String?  @map("school_name") @db.VarChar(100)
+  majorName  String?  @map("major_name") @db.VarChar(100)
+  gradeName  String?  @map("grade_name") @db.VarChar(30)
+  inviteCode String?  @map("invite_code") @db.VarChar(30)
+  status     Int      @default(0) @db.TinyInt
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user       AppUser  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([status], map: "idx_agent_status")
+  @@map("agent_profile")
+}
+
+model Campaign {
+  id          BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  title       String          @db.VarChar(100)
+  cover       String?         @db.VarChar(255)
+  description String?         @db.Text
+  formConfig  Json?           @map("form_config")
+  rewardDesc  String?         @map("reward_desc") @db.VarChar(255)
+  startTime   DateTime?       @map("start_time") @db.DateTime(0)
+  endTime     DateTime?       @map("end_time") @db.DateTime(0)
+  status      Int             @default(0) @db.TinyInt
+  createdAt   DateTime        @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime        @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  shares      CampaignShare[]
+  leads       Lead[]
+  products    Product[]
+  orders      Order[]
+  dailyStats  StatsDaily[]
+
+  @@index([status], map: "idx_campaign_status")
+  @@map("campaign")
+}
+
+model CampaignShare {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  campaignId  BigInt   @map("campaign_id") @db.UnsignedBigInt
+  agentUserId BigInt   @map("agent_user_id") @db.UnsignedBigInt
+  shareCode   String   @unique(map: "uk_share_code") @map("share_code") @db.VarChar(50)
+  shareUrl    String?  @map("share_url") @db.VarChar(255)
+  pv          Int      @default(0)
+  uv          Int      @default(0)
+  leadCount   Int      @default(0) @map("lead_count")
+  orderCount  Int      @default(0) @map("order_count")
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  agentUser   AppUser  @relation(fields: [agentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([campaignId], map: "idx_campaign_share_campaign")
+  @@index([agentUserId], map: "idx_campaign_share_agent")
+  @@map("campaign_share")
+}
+
+model Lead {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  campaignId    BigInt    @map("campaign_id") @db.UnsignedBigInt
+  agentUserId   BigInt?   @map("agent_user_id") @db.UnsignedBigInt
+  studentUserId BigInt?   @map("student_user_id") @db.UnsignedBigInt
+  name          String    @db.VarChar(50)
+  mobile        String    @db.VarChar(20)
+  schoolName    String?   @map("school_name") @db.VarChar(100)
+  majorName     String?   @map("major_name") @db.VarChar(100)
+  gradeName     String?   @map("grade_name") @db.VarChar(30)
+  remark        String?   @db.VarChar(255)
+  status        Int       @default(0) @db.TinyInt
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  campaign      Campaign  @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  agentUser     AppUser?  @relation("LeadAgentUser", fields: [agentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  studentUser   AppUser?  @relation("LeadStudentUser", fields: [studentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([campaignId], map: "idx_lead_campaign")
+  @@index([agentUserId], map: "idx_lead_agent")
+  @@index([mobile], map: "idx_lead_mobile")
+  @@map("lead")
+}
+
+model Product {
+  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  campaignId    BigInt   @map("campaign_id") @db.UnsignedBigInt
+  title         String   @db.VarChar(100)
+  price         Decimal  @default(0.00) @db.Decimal(10, 2)
+  originalPrice Decimal? @map("original_price") @db.Decimal(10, 2)
+  cover         String?  @db.VarChar(255)
+  description   String?  @db.Text
+  status        Int      @default(1) @db.TinyInt
+  createdAt     DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  orders        Order[]
+
+  @@index([campaignId], map: "idx_product_campaign")
+  @@index([status], map: "idx_product_status")
+  @@map("product")
+}
+
+model Order {
+  id            BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  orderNo       String          @unique(map: "uk_order_no") @map("order_no") @db.VarChar(50)
+  productId     BigInt          @map("product_id") @db.UnsignedBigInt
+  campaignId    BigInt?         @map("campaign_id") @db.UnsignedBigInt
+  agentUserId   BigInt?         @map("agent_user_id") @db.UnsignedBigInt
+  studentUserId BigInt?         @map("student_user_id") @db.UnsignedBigInt
+  studentName   String          @map("student_name") @db.VarChar(50)
+  mobile        String          @db.VarChar(20)
+  amount        Decimal         @default(0.00) @db.Decimal(10, 2)
+  status        Int             @default(0) @db.TinyInt
+  payTime       DateTime?       @map("pay_time") @db.DateTime(0)
+  createdAt     DateTime        @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime        @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  product       Product         @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  campaign      Campaign?       @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  agentUser     AppUser?        @relation("OrderAgentUser", fields: [agentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  studentUser   AppUser?        @relation("OrderStudentUser", fields: [studentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  payments      PaymentRecord[]
+
+  @@index([productId], map: "idx_orders_product")
+  @@index([campaignId], map: "idx_orders_campaign")
+  @@index([agentUserId], map: "idx_orders_agent")
+  @@index([studentUserId], map: "idx_orders_student")
+  @@map("orders")
+}
+
+model PaymentRecord {
+  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  orderId       BigInt   @map("order_id") @db.UnsignedBigInt
+  orderNo       String   @map("order_no") @db.VarChar(50)
+  payChannel    String   @default("wechat") @map("pay_channel") @db.VarChar(20)
+  transactionId String?  @map("transaction_id") @db.VarChar(100)
+  amount        Decimal  @default(0.00) @db.Decimal(10, 2)
+  status        Int      @default(0) @db.TinyInt
+  rawCallback   String?  @map("raw_callback") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([orderId], map: "idx_payment_order_id")
+  @@index([orderNo], map: "idx_payment_order_no")
+  @@map("payment_record")
+}
+
+model StatsDaily {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  statDate    DateTime  @map("stat_date") @db.Date
+  campaignId  BigInt?   @map("campaign_id") @db.UnsignedBigInt
+  agentUserId BigInt?   @map("agent_user_id") @db.UnsignedBigInt
+  pv          Int       @default(0)
+  uv          Int       @default(0)
+  leadCount   Int       @default(0) @map("lead_count")
+  orderCount  Int       @default(0) @map("order_count")
+  paidAmount  Decimal   @default(0.00) @map("paid_amount") @db.Decimal(10, 2)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  campaign    Campaign? @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  agentUser   AppUser?  @relation("StatsAgentUser", fields: [agentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([statDate, campaignId, agentUserId], map: "uk_stats_daily")
+  @@map("stats_daily")
+}

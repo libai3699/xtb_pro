@@ -1,0 +1,29 @@
+# dependency directories
+xtb-server/node_modules/
+xtb-admin/node_modules/
+xtb-client/node_modules/
+
+# build outputs
+xtb-server/dist/
+xtb-admin/dist/
+xtb-client/dist/
+xtb-client/unpackage/
+
+# env files
+xtb-server/.env
+xtb-admin/.env
+xtb-client/.env
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+

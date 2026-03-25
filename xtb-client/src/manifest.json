@@ -1,0 +1,15 @@
+{
+  "name": "校推宝Pro",
+  "appid": "__UNI__XTBPRO",
+  "description": "校推宝Pro 客户端",
+  "versionName": "0.0.1",
+  "versionCode": "1",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "your-wechat-appid"
+  },
+  "h5": {
+    "title": "校推宝Pro"
+  }
+}
+

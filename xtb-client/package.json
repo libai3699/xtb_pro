@@ -1,0 +1,21 @@
+{
+  "name": "xtb-client",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:h5": "vite",
+    "build:h5": "vite build"
+  },
+  "dependencies": {
+    "pinia": "^3.0.1",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.15",
+    "@dcloudio/vite-plugin-uni": "^0.5.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.2"
+  }
+}
+
