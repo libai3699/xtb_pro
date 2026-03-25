@@ -41,6 +41,7 @@ export class LeadService {
       data: {
         campaignId: BigInt(dto.campaignId),
         agentUserId: dto.agentUserId ? BigInt(dto.agentUserId) : undefined,
+        studentUserId: dto.studentUserId ? BigInt(dto.studentUserId) : undefined,
         name: dto.name,
         mobile: dto.mobile,
         schoolName: dto.schoolName,

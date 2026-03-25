@@ -58,7 +58,15 @@ export class AuthService {
 
     let user = await this.prisma.appUser.findFirst({
       where: {
-        openid: mockOpenid,
+        role: dto.role,
+        OR: [
+          {
+            openid: mockOpenid,
+          },
+          {
+            mobile: dto.code,
+          },
+        ],
       },
     });
 
@@ -81,6 +89,15 @@ export class AuthService {
           },
         });
       }
+    } else if (!user.openid) {
+      user = await this.prisma.appUser.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          openid: mockOpenid,
+        },
+      });
     }
 
     await this.writeLoginLog({

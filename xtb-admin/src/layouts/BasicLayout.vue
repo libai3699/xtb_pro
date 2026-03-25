@@ -7,12 +7,15 @@
         <el-sub-menu index="/business">
           <template #title>业务中心</template>
           <el-menu-item index="/business/campaign">活动管理</el-menu-item>
+          <el-menu-item index="/business/product">商品管理</el-menu-item>
           <el-menu-item index="/business/agent">代理管理</el-menu-item>
+          <el-menu-item index="/business/user">用户管理</el-menu-item>
           <el-menu-item index="/business/lead">线索管理</el-menu-item>
           <el-menu-item index="/business/order">订单管理</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="/system">
           <template #title>系统管理</template>
+          <el-menu-item index="/system/admin-user">管理员</el-menu-item>
           <el-menu-item index="/system/login-log">登录日志</el-menu-item>
         </el-sub-menu>
       </el-menu>

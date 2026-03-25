@@ -8,7 +8,9 @@ import { CampaignModule } from './modules/campaign/campaign.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { LeadModule } from './modules/lead/lead.module';
 import { OrderModule } from './modules/order/order.module';
+import { ProductModule } from './modules/product/product.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { StatsModule } from './modules/stats/stats.module';
     AgentModule,
     LeadModule,
     OrderModule,
+    ProductModule,
     StatsModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,6 +8,10 @@ export class CreateLeadDto {
   @IsOptional()
   agentUserId?: number;
 
+  @IsNumber()
+  @IsOptional()
+  studentUserId?: number;
+
   @IsString()
   @IsNotEmpty()
   name!: string;

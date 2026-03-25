@@ -32,10 +32,24 @@ const router = createRouter({
           },
         },
         {
+          path: 'business/product',
+          component: () => import('@/views/product/index.vue'),
+          meta: {
+            title: '商品管理',
+          },
+        },
+        {
           path: 'business/agent',
           component: () => import('@/views/agent/index.vue'),
           meta: {
             title: '代理管理',
+          },
+        },
+        {
+          path: 'business/user',
+          component: () => import('@/views/user/index.vue'),
+          meta: {
+            title: '用户管理',
           },
         },
         {
@@ -50,6 +64,13 @@ const router = createRouter({
           component: () => import('@/views/order/index.vue'),
           meta: {
             title: '订单管理',
+          },
+        },
+        {
+          path: 'system/admin-user',
+          component: () => import('@/views/admin-user/index.vue'),
+          meta: {
+            title: '管理员',
           },
         },
         {
