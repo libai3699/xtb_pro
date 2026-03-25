@@ -2,16 +2,29 @@
   <el-container class="layout">
     <el-aside width="220px" class="aside">
       <div class="logo">校推宝Pro</div>
-      <el-menu :default-active="activeMenu" router>
+      <el-menu :default-active="activeMenu" router background-color="#0f172a" text-color="#cbd5e1" active-text-color="#ffffff">
         <el-menu-item index="/dashboard">工作台</el-menu-item>
-        <el-menu-item index="/campaign">活动管理</el-menu-item>
-        <el-menu-item index="/agent">代理管理</el-menu-item>
-        <el-menu-item index="/lead">线索管理</el-menu-item>
-        <el-menu-item index="/order">订单管理</el-menu-item>
+        <el-sub-menu index="/business">
+          <template #title>业务中心</template>
+          <el-menu-item index="/business/campaign">活动管理</el-menu-item>
+          <el-menu-item index="/business/agent">代理管理</el-menu-item>
+          <el-menu-item index="/business/lead">线索管理</el-menu-item>
+          <el-menu-item index="/business/order">订单管理</el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="/system">
+          <template #title>系统管理</template>
+          <el-menu-item index="/system/login-log">登录日志</el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header class="header">校推宝Pro 后台管理端</el-header>
+      <el-header class="header">
+        <div class="header-left">{{ currentTitle }}</div>
+        <div class="header-right">
+          <span class="user-name">{{ currentUser?.name || currentUser?.username || '未登录' }}</span>
+          <el-button link type="primary" @click="logout">退出登录</el-button>
+        </div>
+      </el-header>
       <el-main>
         <router-view />
       </el-main>
@@ -21,10 +34,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { clearAdminSession, getAdminUser } from '@/utils/auth';
 
 const route = useRoute();
+const router = useRouter();
 const activeMenu = computed(() => route.path);
+const currentUser = getAdminUser();
+const currentTitle = computed(() => (route.meta.title as string) || '校推宝Pro 后台');
+
+function logout() {
+  clearAdminSession();
+  router.push('/login');
+}
 </script>
 
 <style scoped>
@@ -42,15 +64,30 @@ const activeMenu = computed(() => route.path);
   font-size: 18px;
   font-weight: 700;
   text-align: center;
+  color: #fff;
 }
 
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
+}
+
+.header-left {
   font-size: 18px;
   font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  color: #334155;
 }
 </style>
 

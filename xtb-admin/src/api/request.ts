@@ -1,3 +1,5 @@
+import { getAdminToken } from '@/utils/auth';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:3000/api';
 
 type RequestMethod = 'GET' | 'POST';
@@ -8,10 +10,12 @@ interface RequestOptions {
 }
 
 export async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
+  const token = getAdminToken();
   const response = await fetch(`${API_BASE_URL}${url}`, {
     method: options.method || 'GET',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
@@ -24,4 +28,3 @@ export async function request<T>(url: string, options: RequestOptions = {}): Pro
 
   return data;
 }
-

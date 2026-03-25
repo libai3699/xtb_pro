@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AdminLoginDto {
   @IsString()
@@ -17,4 +17,21 @@ export class AppLoginDto {
 
   @IsIn(['agent', 'student'])
   role!: 'agent' | 'student';
+}
+
+export class AppRegisterDto {
+  @IsIn(['agent', 'student'])
+  role!: 'agent' | 'student';
+
+  @IsString()
+  @IsNotEmpty()
+  nickname!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  mobile!: string;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 }
