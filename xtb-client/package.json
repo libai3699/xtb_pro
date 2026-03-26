@@ -4,17 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:h5": "vite",
+    "dev:h5": "vite --host 127.0.0.1 --port 5179 --strictPort --clearScreen false",
     "build:h5": "vite build"
   },
   "dependencies": {
-    "pinia": "^3.0.1",
-    "vue": "^3.5.13"
+    "@dcloudio/uni-app": "3.0.0-5000520260324001",
+    "@dcloudio/uni-h5": "3.0.0-5000520260324001",
+    "pinia": "2.1.7",
+    "vue": "3.4.21"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.15",
-    "@dcloudio/vite-plugin-uni": "3.0.0-alpha-3000020210521001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5000520260324001",
     "typescript": "^5.8.2",
-    "vite": "^2.9.18"
+    "vite": "5.2.8"
   }
 }
