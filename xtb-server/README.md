@@ -26,4 +26,19 @@
 
 
 npm i
+发版
+1. 先打包 npm run build
+2. 把
+dist 目录 
+package.json
+package-lock.json
+prisma
+.env
+
+这几项同时发到宝塔目录下
+
+3. 打开终端 npm i
+4. pm2 delete backend
+5. lsof -i :3000 
+6. pm2 start dist/main.js --name backend --update-env 
 

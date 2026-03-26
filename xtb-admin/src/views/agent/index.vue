@@ -5,9 +5,13 @@
       <el-button type="primary" @click="openCreateDialog">新增代理</el-button>
       <el-button @click="fetchList">刷新</el-button>
     </div>
+
     <el-table :data="list" border>
       <el-table-column label="昵称" min-width="120">
         <template #default="{ row }">{{ row.user?.nickname || '-' }}</template>
+      </el-table-column>
+      <el-table-column label="登录账号" min-width="140">
+        <template #default="{ row }">{{ row.user?.account || '-' }}</template>
       </el-table-column>
       <el-table-column prop="realName" label="姓名" min-width="120" />
       <el-table-column prop="schoolName" label="学校" min-width="180" />
@@ -24,14 +28,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="220" fixed="right">
         <template #default="{ row }">
-          <el-button
-            v-if="row.status !== 1"
-            type="primary"
-            link
-            @click="handleAudit(row.id)"
-          >
-            审核通过
-          </el-button>
+          <el-button v-if="row.status !== 1" type="primary" link @click="handleAudit(row.id)">审核通过</el-button>
           <el-button type="primary" link @click="openEditDialog(row)">编辑</el-button>
           <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
         </template>
@@ -39,8 +36,19 @@
     </el-table>
   </el-card>
 
-  <el-dialog v-model="dialogVisible" :title="dialogTitle" width="640px">
-    <el-form :model="form" label-width="90px">
+  <el-dialog v-model="dialogVisible" :title="dialogTitle" width="680px">
+    <el-form :model="form" label-width="96px">
+      <el-form-item label="登录账号">
+        <el-input v-model="form.account" />
+      </el-form-item>
+      <el-form-item :label="editingId ? '登录密码' : '登录密码 *'">
+        <el-input
+          v-model="form.password"
+          type="password"
+          show-password
+          :placeholder="editingId ? '留空则不修改密码' : '请输入登录密码'"
+        />
+      </el-form-item>
       <el-form-item label="昵称">
         <el-input v-model="form.nickname" />
       </el-form-item>
@@ -73,6 +81,7 @@
         </el-select>
       </el-form-item>
     </el-form>
+
     <template #footer>
       <el-button @click="dialogVisible = false">取消</el-button>
       <el-button type="primary" :loading="submitting" @click="submit">提交</el-button>
@@ -112,6 +121,8 @@ const statusTagType: Record<number, '' | 'success' | 'info' | 'warning' | 'dange
 };
 
 const form = reactive<AgentFormData>({
+  account: '',
+  password: '',
   nickname: '',
   mobile: '',
   realName: '',
@@ -127,6 +138,8 @@ const dialogTitle = computed(() => (editingId.value ? '编辑代理' : '新增�
 
 function resetForm() {
   editingId.value = '';
+  form.account = '';
+  form.password = '';
   form.nickname = '';
   form.mobile = '';
   form.realName = '';
@@ -145,6 +158,8 @@ function openCreateDialog() {
 
 function openEditDialog(row: AgentItem) {
   editingId.value = row.id;
+  form.account = row.user?.account || '';
+  form.password = '';
   form.nickname = row.user?.nickname || '';
   form.mobile = row.user?.mobile || '';
   form.realName = row.realName || '';
@@ -169,23 +184,40 @@ async function fetchList() {
   }
 }
 
-async function submit() {
+function validateForm() {
+  if (!(form.account || '').trim()) {
+    ElMessage.warning('请填写登录账号');
+    return false;
+  }
+  if (!editingId.value && !(form.password || '').trim()) {
+    ElMessage.warning('请填写登录密码');
+    return false;
+  }
   if (!form.nickname.trim()) {
     ElMessage.warning('请填写昵称');
-    return;
+    return false;
   }
   if (!form.mobile.trim()) {
     ElMessage.warning('请填写手机号');
-    return;
+    return false;
   }
   if (!(form.realName || '').trim()) {
     ElMessage.warning('请填写真实姓名');
+    return false;
+  }
+  return true;
+}
+
+async function submit() {
+  if (!validateForm()) {
     return;
   }
 
   submitting.value = true;
   try {
-    const payload = {
+    const payload: AgentFormData = {
+      account: form.account.trim(),
+      password: (form.password || '').trim() || undefined,
       nickname: form.nickname.trim(),
       mobile: form.mobile.trim(),
       realName: (form.realName || '').trim(),

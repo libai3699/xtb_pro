@@ -44,13 +44,14 @@
       </view>
     </view>
 
-    <view class="bottom-entry" @click="goMy">个人中心</view>
+    <app-tabbar current="home" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import AppTabbar from '@/components/app-tabbar.vue';
 import { getCampaignList, type CampaignItem } from '@/api/campaign';
 import { useUserStore } from '@/store/user';
 import { buildCampaignDetailPath, redirectToLogin } from '@/utils/app';
@@ -76,15 +77,11 @@ function goDetail(id: string) {
 }
 
 function goCampaignList() {
-  uni.navigateTo({ url: '/pages/campaign/list' });
+  uni.reLaunch({ url: '/pages/campaign/list' });
 }
 
 function goOrders() {
-  uni.navigateTo({ url: '/pages/order/list' });
-}
-
-function goMy() {
-  uni.navigateTo({ url: '/pages/my/index' });
+  uni.reLaunch({ url: '/pages/order/list' });
 }
 
 async function fetchList() {
@@ -110,7 +107,7 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx;
+  padding: 24rpx 24rpx 140rpx;
   background: #f5f7fb;
 }
 
@@ -227,13 +224,6 @@ onShow(() => {
 .campaign-foot,
 .muted {
   color: #94a3b8;
-  font-size: 24rpx;
-}
-
-.bottom-entry {
-  margin-top: 16rpx;
-  text-align: center;
-  color: #475569;
   font-size: 24rpx;
 }
 </style>

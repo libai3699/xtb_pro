@@ -13,12 +13,15 @@
       <view class="name">{{ item.title }}</view>
       <view class="text">{{ item.rewardDesc || item.description || '欢迎报名参与' }}</view>
     </view>
+
+    <app-tabbar current="campaign" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import AppTabbar from '@/components/app-tabbar.vue';
 import { getCampaignList, type CampaignItem } from '@/api/campaign';
 import { buildCampaignDetailPath } from '@/utils/app';
 
@@ -56,7 +59,7 @@ onShow(fetchList);
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx;
+  padding: 24rpx 24rpx 140rpx;
   background: #f5f7fb;
 }
 

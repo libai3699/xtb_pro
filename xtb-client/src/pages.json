@@ -13,6 +13,12 @@
       }
     },
     {
+      "path": "pages/agent/stats",
+      "style": {
+        "navigationBarTitleText": "代理数据"
+      }
+    },
+    {
       "path": "pages/student/home",
       "style": {
         "navigationBarTitleText": "学生首页"

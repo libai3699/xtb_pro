@@ -14,12 +14,15 @@
       <view class="amount">￥{{ item.amount }}</view>
       <view class="time">{{ item.createdAt }}</view>
     </view>
+
+    <app-tabbar v-if="userStore.role === 'student'" current="order" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import AppTabbar from '@/components/app-tabbar.vue';
 import { getMyOrders, type OrderItem } from '@/api/order';
 import { useUserStore } from '@/store/user';
 import { redirectToLogin } from '@/utils/app';
@@ -58,7 +61,7 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx;
+  padding: 24rpx 24rpx 140rpx;
   background: #f5f7fb;
 }
 

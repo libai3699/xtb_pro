@@ -7,6 +7,7 @@ interface StoredUser {
   id: string;
   role: UserRole;
   token: string;
+  account?: string;
   nickname: string;
   mobile?: string;
 }
@@ -18,6 +19,7 @@ export const useUserStore = defineStore('user', {
     id: storageUser?.id || '',
     role: storageUser?.role || ('student' as UserRole),
     token: storageUser?.token || '',
+    account: storageUser?.account || '',
     nickname: storageUser?.nickname || '',
     mobile: storageUser?.mobile || '',
   }),
@@ -26,10 +28,11 @@ export const useUserStore = defineStore('user', {
       this.role = role;
       this.persist();
     },
-    setUser(payload: { id: string; role: UserRole; token: string; nickname?: string; mobile?: string }) {
+    setUser(payload: { id: string; role: UserRole; token: string; account?: string; nickname?: string; mobile?: string }) {
       this.id = payload.id;
       this.role = payload.role;
       this.token = payload.token;
+      this.account = payload.account || '';
       this.nickname = payload.nickname || '';
       this.mobile = payload.mobile || '';
       this.persist();
@@ -38,6 +41,7 @@ export const useUserStore = defineStore('user', {
       this.id = '';
       this.role = 'student';
       this.token = '';
+      this.account = '';
       this.nickname = '';
       this.mobile = '';
       clearUserStorage();
@@ -47,6 +51,7 @@ export const useUserStore = defineStore('user', {
         id: this.id,
         role: this.role,
         token: this.token,
+        account: this.account,
         nickname: this.nickname,
         mobile: this.mobile,
       });

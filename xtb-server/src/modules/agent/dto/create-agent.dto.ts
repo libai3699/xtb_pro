@@ -3,6 +3,14 @@ import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateAgentDto {
   @IsString()
   @IsNotEmpty()
+  account!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password!: string;
+
+  @IsString()
+  @IsNotEmpty()
   nickname!: string;
 
   @IsString()

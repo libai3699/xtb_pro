@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { hashPassword } from '../../common/utils/auth.util';
 import { serializeValue } from '../../common/utils/serialize.util';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
@@ -18,6 +19,7 @@ export class AgentService {
         user: {
           select: {
             id: true,
+            account: true,
             nickname: true,
             mobile: true,
             status: true,
@@ -34,13 +36,29 @@ export class AgentService {
   }
 
   async create(dto: CreateAgentDto) {
+    const account = dto.account.trim();
+    const password = dto.password.trim();
+    const mobile = dto.mobile.trim();
+
+    const exists = await this.prisma.appUser.findFirst({
+      where: {
+        account,
+      },
+    });
+
+    if (exists) {
+      throw new BadRequestException('登录账号已存在');
+    }
+
     const created = await this.prisma.$transaction(async (tx) => {
       const user = await tx.appUser.create({
         data: {
           role: 'agent',
-          nickname: dto.nickname,
-          mobile: dto.mobile,
-          avatar: dto.avatar,
+          account,
+          password: hashPassword(password),
+          nickname: dto.nickname.trim(),
+          mobile,
+          avatar: dto.avatar?.trim() || undefined,
           status: dto.status === 1 ? 1 : 0,
         },
       });
@@ -48,11 +66,11 @@ export class AgentService {
       await tx.agentProfile.create({
         data: {
           userId: user.id,
-          realName: dto.realName,
-          schoolName: dto.schoolName,
-          majorName: dto.majorName,
-          gradeName: dto.gradeName,
-          inviteCode: dto.inviteCode,
+          realName: dto.realName.trim(),
+          schoolName: dto.schoolName?.trim() || undefined,
+          majorName: dto.majorName?.trim() || undefined,
+          gradeName: dto.gradeName?.trim() || undefined,
+          inviteCode: dto.inviteCode?.trim() || undefined,
           status: dto.status ?? 0,
         },
       });
@@ -63,6 +81,7 @@ export class AgentService {
           user: {
             select: {
               id: true,
+              account: true,
               nickname: true,
               mobile: true,
               status: true,
@@ -89,13 +108,33 @@ export class AgentService {
       throw new NotFoundException('代理不存在');
     }
 
+    const nextAccount = dto.account !== undefined ? dto.account.trim() : agent.user.account || '';
+    if (!nextAccount) {
+      throw new BadRequestException('代理必须设置登录账号');
+    }
+
+    const duplicate = await this.prisma.appUser.findFirst({
+      where: {
+        account: nextAccount,
+        id: {
+          not: agent.user.id,
+        },
+      },
+    });
+
+    if (duplicate) {
+      throw new BadRequestException('登录账号已存在');
+    }
+
     const updated = await this.prisma.$transaction(async (tx) => {
       await tx.appUser.update({
         where: { id: agent.userId },
         data: {
-          nickname: dto.nickname,
-          mobile: dto.mobile,
-          avatar: dto.avatar,
+          account: nextAccount,
+          password: dto.password?.trim() ? hashPassword(dto.password.trim()) : undefined,
+          nickname: dto.nickname !== undefined ? dto.nickname.trim() : undefined,
+          mobile: dto.mobile !== undefined ? dto.mobile.trim() : undefined,
+          avatar: dto.avatar !== undefined ? dto.avatar.trim() || null : undefined,
           status: dto.status === undefined ? undefined : dto.status === 1 ? 1 : 0,
         },
       });
@@ -103,11 +142,11 @@ export class AgentService {
       await tx.agentProfile.update({
         where: { id: agent.id },
         data: {
-          realName: dto.realName,
-          schoolName: dto.schoolName,
-          majorName: dto.majorName,
-          gradeName: dto.gradeName,
-          inviteCode: dto.inviteCode,
+          realName: dto.realName !== undefined ? dto.realName.trim() : undefined,
+          schoolName: dto.schoolName !== undefined ? dto.schoolName.trim() || null : undefined,
+          majorName: dto.majorName !== undefined ? dto.majorName.trim() || null : undefined,
+          gradeName: dto.gradeName !== undefined ? dto.gradeName.trim() || null : undefined,
+          inviteCode: dto.inviteCode !== undefined ? dto.inviteCode.trim() || null : undefined,
           status: dto.status,
         },
       });
@@ -118,6 +157,7 @@ export class AgentService {
           user: {
             select: {
               id: true,
+              account: true,
               nickname: true,
               mobile: true,
               status: true,

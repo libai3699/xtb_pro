@@ -12,6 +12,7 @@ export interface AgentItem {
   createdAt: string;
   user?: {
     id: string;
+    account?: string;
     nickname?: string;
     mobile?: string;
     status: number;
@@ -19,6 +20,8 @@ export interface AgentItem {
 }
 
 export interface AgentFormData {
+  account: string;
+  password?: string;
   nickname: string;
   mobile: string;
   realName: string;

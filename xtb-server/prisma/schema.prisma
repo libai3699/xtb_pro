@@ -25,6 +25,8 @@ model AdminUser {
 model AppUser {
   id            BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
   role          String         @db.VarChar(20)
+  account       String?        @unique(map: "uk_app_user_account") @db.VarChar(50)
+  password      String?        @db.VarChar(255)
   nickname      String?        @db.VarChar(50)
   avatar        String?        @db.VarChar(255)
   mobile        String?        @db.VarChar(20)

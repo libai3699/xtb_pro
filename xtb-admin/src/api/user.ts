@@ -3,6 +3,7 @@ import { request } from './request';
 export interface AppUserItem {
   id: string;
   role: 'agent' | 'student';
+  account?: string;
   nickname?: string;
   avatar?: string;
   mobile?: string;
@@ -23,7 +24,9 @@ export interface AppUserItem {
 export interface AppUserFormData {
   role: 'agent' | 'student';
   nickname: string;
-  mobile: string;
+  account?: string;
+  password?: string;
+  mobile?: string;
   avatar?: string;
   status: 0 | 1;
   realName?: string;

@@ -9,6 +9,24 @@ interface RequestOptions {
   body?: unknown;
 }
 
+function normalizeErrorMessage(data: unknown) {
+  const payload = data as { message?: string | string[]; error?: string };
+
+  if (Array.isArray(payload?.message)) {
+    return payload.message.join('；');
+  }
+
+  if (typeof payload?.message === 'string' && payload.message.trim()) {
+    return payload.message;
+  }
+
+  if (typeof payload?.error === 'string' && payload.error.trim()) {
+    return payload.error;
+  }
+
+  return '请求失败';
+}
+
 export async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
   const token = getAdminToken();
   const response = await fetch(`${API_BASE_URL}${url}`, {
@@ -20,11 +38,11 @@ export async function request<T>(url: string, options: RequestOptions = {}): Pro
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
-  const data = (await response.json()) as T & { message?: string };
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error((data as { message?: string }).message || '请求失败');
+    throw new Error(normalizeErrorMessage(data));
   }
 
-  return data;
+  return data as T;
 }

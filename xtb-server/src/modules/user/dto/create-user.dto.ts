@@ -9,8 +9,16 @@ export class CreateUserDto {
   nickname!: string;
 
   @IsString()
-  @IsNotEmpty()
-  mobile!: string;
+  @IsOptional()
+  mobile?: string;
+
+  @IsString()
+  @IsOptional()
+  account?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
 
   @IsString()
   @IsOptional()

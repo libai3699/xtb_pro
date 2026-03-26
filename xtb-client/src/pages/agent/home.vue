@@ -30,7 +30,7 @@
 
     <view class="section-header">
       <view class="section-title">可推广活动</view>
-      <view class="section-link" @click="goMy">我的主页</view>
+      <view class="section-link" @click="goStats">查看完整数据</view>
     </view>
 
     <view v-if="loading" class="card muted">活动加载中...</view>
@@ -43,12 +43,15 @@
         <button size="mini" type="primary" @click="copyShareLink(item.id)">复制推广链接</button>
       </view>
     </view>
+
+    <app-tabbar current="home" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import AppTabbar from '@/components/app-tabbar.vue';
 import { getCampaignList, type CampaignItem } from '@/api/campaign';
 import { getMyAgentStats } from '@/api/agent';
 import { useUserStore } from '@/store/user';
@@ -80,8 +83,8 @@ function goDetail(id: string) {
   uni.navigateTo({ url: buildCampaignDetailPath(id, userStore.id) });
 }
 
-function goMy() {
-  uni.navigateTo({ url: '/pages/my/index' });
+function goStats() {
+  uni.reLaunch({ url: '/pages/agent/stats' });
 }
 
 function copyShareLink(campaignId: string) {
@@ -121,7 +124,7 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx;
+  padding: 24rpx 24rpx 140rpx;
   background:
     radial-gradient(circle at top left, rgba(20, 184, 166, 0.1), transparent 30%),
     #f5f7fb;

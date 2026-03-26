@@ -15,6 +15,14 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
+  account?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
+
+  @IsString()
+  @IsOptional()
   avatar?: string;
 
   @IsIn([0, 1])

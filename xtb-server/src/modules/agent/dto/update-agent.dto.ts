@@ -3,6 +3,14 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
 export class UpdateAgentDto {
   @IsString()
   @IsOptional()
+  account?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
+
+  @IsString()
+  @IsOptional()
   nickname?: string;
 
   @IsString()

@@ -27,12 +27,15 @@
       <view class="menu-title">退出登录</view>
       <view class="menu-desc">清空本地登录态并返回登录页</view>
     </view>
+
+    <app-tabbar current="my" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import AppTabbar from '@/components/app-tabbar.vue';
 import { getMyAgentStats } from '@/api/agent';
 import { useUserStore } from '@/store/user';
 import { goRoleHome, redirectToLogin } from '@/utils/app';
@@ -82,7 +85,7 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx;
+  padding: 24rpx 24rpx 140rpx;
   background: #f5f7fb;
 }
 
