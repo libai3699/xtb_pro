@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 代理端活动详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .activity-cover {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .activity-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .activity-info {
+            padding: 20px;
+            background: white;
+        }
+        .activity-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .activity-org {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .activity-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .section {
+            padding: 20px;
+            background: white;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+        .section-content {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .action-buttons {
+            padding: 20px;
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 活动封面 -->
+            <div class="activity-cover">
+                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="活动封面">
+            </div>
+            
+            <!-- 活动基本信息 -->
+            <div class="activity-info">
+                <h1 class="activity-title">Python数据分析实战训练营</h1>
+                <div class="activity-meta">
+                    <div class="activity-org">
+                        <i class="fas fa-building"></i>
+                        <span>清华大学继续教育学院</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>2024-03-15 至 2024-03-17</span>
+                    </div>
+                </div>
+                
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">参与人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">评分</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">¥500</div>
+                        <div class="stat-label">奖励</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 活动描述 -->
+            <div class="section">
+                <div class="section-title">活动描述</div>
+                <div class="section-content">
+                    本次训练营将带领学员系统学习Python数据分析的核心技能，包括数据清洗、可视化分析、机器学习等实用技术。通过真实案例实战，帮助学员快速掌握数据分析能力。
+                </div>
+            </div>
+            
+            <!-- 参与要求 -->
+            <div class="section">
+                <div class="section-title">参与要求</div>
+                <div class="section-content">
+                    • 具备基本的Python编程基础<br>
+                    • 对数据分析感兴趣<br>
+                    • 能够全程参与3天培训<br>
+                    • 完成所有实践作业
+                </div>
+            </div>
+            
+            <!-- 奖励设置 -->
+            <div class="section">
+                <div class="section-title">奖励设置</div>
+                <div class="section-content">
+                    • 完成培训：¥200奖励<br>
+                    • 优秀学员：额外¥300奖励<br>
+                    • 结业证书：电子版证书<br>
+                    • 推荐奖励：成功推荐1人奖励¥50
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <div class="btn btn-primary">
+                    <i class="fas fa-share-alt mr-2"></i>立即推广
+                </div>
+                <div class="btn btn-secondary">
+                    <i class="fas fa-heart mr-2"></i>收藏活动
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-tasks text-xl mb-1"></i>
+                <span>任务</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span>推广</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

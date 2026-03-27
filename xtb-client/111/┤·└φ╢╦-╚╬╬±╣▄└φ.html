@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 代理端任务管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .filter-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .filter-tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .filter-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+        .task-list {
+            padding: 0;
+        }
+        .task-item {
+            padding: 16px 20px;
+            background: white;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            flex: 1;
+        }
+        .task-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-pending {
+            background: #fef3cd;
+            color: #92400e;
+        }
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .task-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">任务管理</h1>
+                <p class="page-subtitle">管理您的推广任务和进度</p>
+            </div>
+            
+            <!-- 筛选标签 -->
+            <div class="filter-tabs">
+                <div class="filter-tab active">进行中</div>
+                <div class="filter-tab">待开始</div>
+                <div class="filter-tab">已完成</div>
+            </div>
+            
+            <!-- 任务列表 -->
+            <div class="task-list">
+                <!-- 任务1 -->
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-title">Python数据分析训练营推广</div>
+                        <div class="task-status status-in-progress">进行中</div>
+                    </div>
+                    <div class="task-meta">
+                        <div>
+                            <i class="fas fa-building"></i>
+                            <span>清华大学</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar"></i>
+                            <span>截止：03-20</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-users"></i>
+                            <span>目标：50人</span>
+                        </div>
+                    </div>
+                    <div class="task-progress">
+                        <span>进度：32/50</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 64%"></div>
+                        </div>
+                        <span>64%</span>
+                    </div>
+                    <div class="task-actions">
+                        <div class="action-btn btn-primary">继续推广</div>
+                        <div class="action-btn btn-secondary">查看详情</div>
+                    </div>
+                </div>
+                
+                <!-- 任务2 -->
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-title">机器学习工作坊推广</div>
+                        <div class="task-status status-pending">待开始</div>
+                    </div>
+                    <div class="task-meta">
+                        <div>
+                            <i class="fas fa-building"></i>
+                            <span>北京大学</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar"></i>
+                            <span>开始：03-25</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-users"></i>
+                            <span>目标：30人</span>
+                        </div>
+                    </div>
+                    <div class="task-progress">
+                        <span>进度：0/30</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span>0%</span>
+                    </div>
+                    <div class="task-actions">
+                        <div class="action-btn btn-primary">开始推广</div>
+                        <div class="action-btn btn-secondary">查看详情</div>
+                    </div>
+                </div>
+                
+                <!-- 任务3 -->
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-title">Web开发实战课程推广</div>
+                        <div class="task-status status-completed">已完成</div>
+                    </div>
+                    <div class="task-meta">
+                        <div>
+                            <i class="fas fa-building"></i>
+                            <span>复旦大学</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar"></i>
+                            <span>已完成</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-users"></i>
+                            <span>完成：45/40</span>
+                        </div>
+                    </div>
+                    <div class="task-progress">
+                        <span>进度：45/40</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <span>112%</span>
+                    </div>
+                    <div class="task-actions">
+                        <div class="action-btn btn-primary">查看报告</div>
+                        <div class="action-btn btn-secondary">评价反馈</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-tasks text-xl mb-1"></i>
+                <span>任务</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span>推广</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

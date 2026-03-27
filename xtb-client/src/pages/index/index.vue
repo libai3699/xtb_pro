@@ -133,6 +133,7 @@ async function handleLogin() {
       account: res.data.user.account,
       nickname: res.data.user.nickname,
       mobile: res.data.user.mobile,
+      avatar: res.data.user.avatar,
     });
 
     uni.showToast({ title: '登录成功', icon: 'success' });

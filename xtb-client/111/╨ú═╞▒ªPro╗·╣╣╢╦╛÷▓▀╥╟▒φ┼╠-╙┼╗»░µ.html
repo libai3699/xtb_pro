@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro机构端决策仪表盘 - 优化版</title>
+    
+    <!-- 优化加载：使用CDN加速 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #06ffa5;
+            --warning-color: #ffbe0b;
+            --danger-color: #fb5607;
+            --info-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gradient-primary: linear-gradient(135deg, #4361ee, #3f37c9);
+            --gradient-success: linear-gradient(135deg, #06ffa5, #00d084);
+            --gradient-warning: linear-gradient(135deg, #ffbe0b, #ff9500);
+            --gradient-danger: linear-gradient(135deg, #fb5607, #e63946);
+        }
+
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+            color: white;
+        }
+
+        .page-loader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* 骨架屏效果 */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e3e8f0 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 现代化侧边栏 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--gradient-primary);
+            color: white;
+            padding-top: 30px;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-header {
+            padding: 0 30px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 0;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: rgba(255, 255, 255, 0.12);
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: -1;
+        }
+
+        .sidebar-menu a:hover::before, .sidebar-menu a.active::before {
+            width: 100%;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            color: white;
+            transform: translateX(8px);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu i {
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu a:hover i {
+            transform: scale(1.1);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+            transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* 现代化顶部导航 */
+        .top-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .top-navbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
+        }
+
+        .top-navbar:hover::before {
+            transform: scaleX(1);
+        }
+
+        .top-navbar:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-3px);
+        }
+
+        .role-switcher {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .role-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(67, 97, 238, 0.5); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* 现代化卡片设计 */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-primary);
+            transition: width 0.4s ease;
+        }
+
+        .dashboard-card:hover .card-title::after {
+            width: 100px;
+        }
+
+        .card-title i {
+            margin-right: 15px;
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover .card-title i {
+            transform: scale(1.1);
+        }
+
+        /* 现代化指标卡片 */
+        .metric-card {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0);
+            transition: background 0.4s ease;
+        }
+
+        .metric-card:hover::before {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(67, 97, 238, 0.4);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: all 0.8s ease;
+        }
+
+        .metric-card:hover::after {
+            transform: scale(1);
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-card:hover .metric-value {
+            transform: scale(1.1);
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .metric-change {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+
+        .metric-change i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success-color);
+        }
+
+        .metric-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* 响应式设计优化 */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 250px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                transform: translateX(0);
+            }
+            
+            .sidebar-header h4, .sidebar-menu span, .role-switcher span {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                text-align: center;
+                padding: 20px 15px;
+                justify-content: center;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .top-navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .dashboard-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .metric-card {
+                padding: 25px;
+            }
+            
+            .metric-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(67, 97, 238, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* 按钮样式优化 */
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            padding: 12px 24px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 动画效果 */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 现代化页面加载动画 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">校推宝Pro 加载中...</div>
+    </div>
+
+    <!-- 现代化侧边栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="mb-2">校推宝Pro</h4>
+            <small>智能决策仪表盘</small>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="bi bi-speedometer2"></i> <span>决策仪表盘</span></a></li>
+            <li><a href="#"><i class="bi bi-people"></i> <span>代理管理</span></a></li>
+            <li><a href="#"><i class="bi bi-calendar-event"></i> <span>活动中心</span></a></li>
+            <li><a href="#"><i class="bi bi-person-lines-fill"></i> <span>线索管理</span></a></li>
+            <li><a href="#"><i class="bi bi-currency-dollar"></i> <span>财务管理</span></a></li>
+            <li><a href="#"><i class="bi bi-graph-up"></i> <span>数据分析</span></a></li>
+            <li><a href="#"><i class="bi bi-gear"></i> <span>系统设置</span></a></li>
+        </ul>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 现代化顶部导航 -->
+        <div class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5 class="mb-0 ms-3 fw-bold">机构智能决策仪表盘</h5>
+                <div class="role-switcher ms-4">
+                    <span class="text-muted">当前角色：</span>
+                    <div class="role-badge">
+                        <i class="bi bi-person-check me-2"></i>机构管理员
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="time-selector">
+                    <select class="form-select form-select-sm" id="timeRange">
+                        <option value="today">今日</option>
+                        <option value="week" selected>本周</option>
+                        <option value="month">本月</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" id="exportBtn">
+                    <i class="bi bi-download me-2"></i>导出报表
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell"></i> 
+                        <span class="badge bg-danger ms-1">3</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li><a class="dropdown-item" href="#">预算即将超支预警</a></li>
+                        <li><a class="dropdown-item" href="#">代理活跃度下降</a></li>
+                        <li><a class="dropdown-item" href="#">活动转化率异常</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心业务指标区 -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="metric-card animate-on-scroll" data-delay="0.1">
+                    <div class="metric-value">3.2</div>
+                    <div class="metric-label">ROI 投入产出比</div>
+                    <div class="metric-change positive">
+                        <i class="bi bi-arrow-up"></i> 12.5%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="metric-card animate-on-scroll" data-delay="0.2">
+                    <div class="metric-value">¥28</div>
+                    <div class="metric-label">单线索成本</div>
+                    <div class="metric-change negative">
+                        <i class="bi bi-arrow-down"></i> 5.3%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="metric-card animate-on-scroll" data-delay="0.3">
+                    <div class="metric-value">¥156</div>
+                    <div class="metric-label">单有效线索成本</div>
+                    <div class="metric-change positive">
+                        <i class="bi bi-arrow-up"></i> 2.1%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="metric-card animate-on-scroll" data-delay="0.4">
+                    <div class="metric-value">68%</div>
+                    <div class="metric-label">整体转化率</div>
+                    <div class="metric-change positive">
+                        <i class="bi bi-arrow-up"></i> 8.7%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据可视化区域 -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="dashboard-card animate-on-scroll" data-delay="0.5">
+                    <div class="card-title">
+                        <i class="bi bi-graph-up-arrow"></i> 业务增长趋势
+                    </div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="dashboard-card animate-on-scroll" data-delay="0.6">
+                    <div class="card-title">
+                        <i class="bi bi-pie-chart"></i> 预算分配
+                    </div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详细数据表格 -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="dashboard-card animate-on-scroll" data-delay="0.7">
+                    <div class="card-title">
+                        <i class="bi bi-table"></i> 活动数据明细
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>活动名称</th>
+                                    <th>类型</th>
+                                    <th>预算</th>
+                                    <th>参与人数</th>
+                                    <th>转化率</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>考研数学冲刺班</td>
+                                    <td>考研培训</td>
+                                    <td>¥15,000</td>
+                                    <td>245</td>
+                                    <td>72.5%</td>
+                                    <td><span class="badge bg-success">进行中</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+                                </tr>
+                                <tr>
+                                    <td>英语四六级备考</td>
+                                    <td>语言培训</td>
+                                    <td>¥10,000</td>
+                                    <td>186</td>
+                                    <td>68.3%</td>
+                                    <td><span class="badge bg-success">进行中</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+                                </tr>
+                                <tr>
+                                    <td>公务员备考讲座</td>
+                                    <td>职业培训</td>
+                                    <td>¥8,000</td>
+                                    <td>98</td>
+                                    <td>45.2%</td>
+                                    <td><span class="badge bg-warning">即将结束</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速操作区域 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card animate-on-scroll" data-delay="0.8">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">快速操作</h5>
+                            <small class="text-muted">常用功能快捷入口</small>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button class="btn btn-primary" id="createActivityBtn">
+                                <i class="bi bi-plus-circle me-2"></i>创建活动
+                            </button>
+                            <button class="btn btn-outline-primary" id="agentReviewBtn">
+                                <i class="bi bi-person-check me-2"></i>代理审核
+                            </button>
+                            <button class="btn btn-outline-primary" id="generateReportBtn">
+                                <i class="bi bi-file-earmark-text me-2"></i>生成报表
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 隐藏加载动画
+            setTimeout(() => {
+                document.getElementById('pageLoader').classList.add('fade-out');
+                setTimeout(() => {
+                    document.getElementById('pageLoader').style.display = 'none';
+                }, 500);
+            }, 1000);
+
+            // 移动端菜单切换
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+
+            // 滚动动画
+            function initScrollAnimation() {
+                const elements = document.querySelectorAll('.animate-on-scroll');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const delay = entry.target.getAttribute('data-delay') || 0;
+                            setTimeout(() => {
+                                entry.target.classList.add('animated');
+                            }, delay * 300);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                elements.forEach(element => {
+                    observer.observe(element);
+                });
+            }
+
+            // 初始化图表
+            function initCharts() {
+                // 增长趋势图
+                const growthCtx = document.getElementById('growthChart').getContext('2d');
+                new Chart(growthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        datasets: [{
+                            label: '线索数量',
+                            data: [120, 150, 180, 210, 240, 270, 300, 280, 320, 350, 380, 400],
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: '转化率',
+                            data: [45, 48, 52, 55, 58, 62, 65, 63, 67, 70, 72, 75],
+                            borderColor: '#06ffa5',
+                            backgroundColor: 'rgba(6, 255, 165, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#333',
+                                    font: {
+                                        size: 12,
+                                        family: 'Microsoft YaHei'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#4361ee',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+
+                // 预算分配图
+                const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+                new Chart(budgetCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['活动预算', '代理佣金', '广告投放', '系统维护', '其他'],
+                        datasets: [{
+                            data: [45, 25, 15, 10, 5],
+                            backgroundColor: [
+                                '#4361ee',
+                                '#06ffa5',
+                                '#ffbe0b',
+                                '#fb5607',
+                                '#4cc9f0'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#333',
+                                    font: {
+                                        size: 11,
+                                        family: 'Microsoft YaHei'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff'
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                formatter: (value) => value + '%'
+                            }
+                        },
+                        cutout: '60%',
+                        animation: {
+                            duration: 1500,
+                            easing: 'easeOutQuart'
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // 数字滚动动画
+            function animateNumbers() {
+                const metricValues = document.querySelectorAll('.metric-value');
+                
+                metricValues.forEach(element => {
+                    const targetValue = parseFloat(element.textContent);
+                    const suffix = element.textContent.replace(/[0-9.]/g, '');
+                    let currentValue = 0;
+                    const duration = 2000;
+                    const steps = 60;
+                    const increment = targetValue / steps;
+                    
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= targetValue) {
+                            currentValue = targetValue;
+                            clearInterval(timer);
+                        }
+                        
+                        if (suffix === '%') {
+                            element.textContent = Math.round(currentValue) + suffix;
+                        } else if (suffix === '¥') {
+                            element.textContent = suffix + Math.round(currentValue);
+                        } else {
+                            element.textContent = currentValue.toFixed(1);
+                        }
+                    }, duration / steps);
+                });
+            }
+
+            // 实时数据更新模拟
+            function simulateRealTimeData() {
+                setInterval(() => {
+                    // 随机更新指标数据
+                    const metrics = document.querySelectorAll('.metric-value');
+                    metrics.forEach(metric => {
+                        const currentValue = parseFloat(metric.textContent.replace(/[^0-9.]/g, ''));
+                        const change = (Math.random() - 0.5) * 0.1 * currentValue;
+                        const newValue = Math.max(0, currentValue + change);
+                        
+                        if (metric.textContent.includes('¥')) {
+                            metric.textContent = '¥' + Math.round(newValue);
+                        } else if (metric.textContent.includes('%')) {
+                            metric.textContent = Math.round(newValue) + '%';
+                        } else {
+                            metric.textContent = newValue.toFixed(1);
+                        }
+                    });
+                }, 30000); // 每30秒更新一次
+            }
+
+            // 按钮交互效果
+            function initButtonInteractions() {
+                const buttons = document.querySelectorAll('.btn');
+                
+                buttons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        // 创建涟漪效果
+                        const ripple = document.createElement('span');
+                        const rect = this.getBoundingClientRect();
+                        const size = Math.max(rect.width, rect.height);
+                        const x = e.clientX - rect.left - size / 2;
+                        const y = e.clientY - rect.top - size / 2;
+                        
+                        ripple.style.cssText = `
+                            position: absolute;
+                            width: ${size}px;
+                            height: ${size}px;
+                            left: ${x}px;
+                            top: ${y}px;
+                            background: rgba(255, 255, 255, 0.6);
+                            border-radius: 50%;
+                            transform: scale(0);
+                            animation: ripple 0.6s linear;
+                        `;
+                        
+                        this.style.position = 'relative';
+                        this.style.overflow = 'hidden';
+                        this.appendChild(ripple);
+                        
+                        setTimeout(() => {
+                            ripple.remove();
+                        }, 600);
+                    });
+                });
+            }
+
+            // 时间范围选择器事件
+            document.getElementById('timeRange').addEventListener('change', function() {
+                const selectedValue = this.value;
+                
+                // 显示加载状态
+                const cards = document.querySelectorAll('.dashboard-card');
+                cards.forEach(card => {
+                    card.style.opacity = '0.7';
+                    card.style.pointerEvents = 'none';
+                });
+                
+                // 模拟数据加载
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.style.opacity = '1';
+                        card.style.pointerEvents = 'auto';
+                    });
+                    
+                    // 显示成功提示
+                    showToast('数据已更新', 'success');
+                }, 1000);
+            });
+
+            // 导出报表功能
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                showToast('报表导出中...', 'info');
+                
+                setTimeout(() => {
+                    showToast('报表导出成功！', 'success');
+                }, 2000);
+            });
+
+            // 快速操作按钮事件
+            document.getElementById('createActivityBtn').addEventListener('click', function() {
+                showToast('跳转到活动创建页面', 'info');
+            });
+
+            document.getElementById('agentReviewBtn').addEventListener('click', function() {
+                showToast('跳转到代理审核页面', 'info');
+            });
+
+            document.getElementById('generateReportBtn').addEventListener('click', function() {
+                showToast('生成详细报表中...', 'info');
+                
+                setTimeout(() => {
+                    showToast('报表生成完成！', 'success');
+                }, 1500);
+            });
+
+            // 显示提示消息
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-bg-${type} border-0`;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    min-width: 300px;
+                `;
+                
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi bi-${getToastIcon(type)} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+                
+                toast.addEventListener('hidden.bs.toast', function() {
+                    toast.remove();
+                });
+            }
+
+            function getToastIcon(type) {
+                switch(type) {
+                    case 'success': return 'check-circle';
+                    case 'danger': return 'exclamation-triangle';
+                    case 'warning': return 'exclamation-circle';
+                    default: return 'info-circle';
+                }
+            }
+
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                .toast {
+                    animation: slideInRight 0.3s ease-out;
+                }
+                
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 初始化所有功能
+            initScrollAnimation();
+            initCharts();
+            animateNumbers();
+            simulateRealTimeData();
+            initButtonInteractions();
+
+            // 页面加载完成后的最终动画
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                document.body.style.transform = 'translateY(0)';
+            }, 500);
+        });
+
+        // 页面初始样式
+        document.body.style.opacity = '0';
+        document.body.style.transform = 'translateY(20px)';
+        document.body.style.transition = 'all 0.6s ease';
+    </script>
+</body>
+</html>

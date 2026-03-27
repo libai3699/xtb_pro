@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 机构端仪表盘</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #06ffa5;
+            --info-color: #00b4d8;
+            --warning-color: #ffbe0b;
+            --danger-color: #fb5607;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            border-bottom: none;
+            padding: 15px 20px;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+        
+        .metric-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card p {
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+        
+        .metric-card i {
+            font-size: 3rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .metric-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .metric-success {
+            background: linear-gradient(135deg, #06ffa5, #00b388);
+        }
+        
+        .metric-info {
+            background: linear-gradient(135deg, var(--info-color), #0077b6);
+        }
+        
+        .metric-warning {
+            background: linear-gradient(135deg, var(--warning-color), #f77f00);
+        }
+        
+        .activity-feed {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .activity-icon.new-user {
+            background-color: var(--success-color);
+        }
+        
+        .activity-icon.new-agent {
+            background-color: var(--info-color);
+        }
+        
+        .activity-icon.activity-start {
+            background-color: var(--warning-color);
+        }
+        
+        .activity-icon.activity-signup {
+            background-color: var(--primary-color);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            height: 100%;
+        }
+        
+        .nav-link {
+            color: #6c757d;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .filter-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .data-table {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .data-table th {
+            border: none;
+            padding: 12px 15px;
+            font-weight: 500;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        .data-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .agent-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d1f2eb;
+            color: #0e7c57;
+        }
+        
+        .status-inactive {
+            background-color: #ffeaea;
+            color: #d63031;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .activity-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .status-ongoing {
+            background-color: #d1f2eb;
+            color: #0e7c57;
+        }
+        
+        .status-ended {
+            background-color: #ffeaea;
+            color: #d63031;
+        }
+        
+        .finance-note {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #856404;
+            margin-top: 15px;
+        }
+        
+        .finance-note i {
+            margin-right: 8px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .lead-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .status-new {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-contacted {
+            background-color: #d1f2eb;
+            color: #0e7c57;
+        }
+        
+        .status-converted {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .duplicate-badge {
+            background-color: #f8d7da;
+            color: #721c24;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-building"></i> 校推宝Pro - 机构端
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> 新东方教育
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> 机构设置</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-people"></i> 团队管理</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle"></i> 帮助</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- 左侧导航栏 -->
+            <div class="col-md-2 mb-4">
+                <div class="sidebar">
+                    <div class="nav flex-column nav-pills">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-speedometer2"></i> 仪表盘
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-people"></i> 代理管理
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-calendar-event"></i> 活动中心
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-person-lines-fill"></i> 线索管理
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-currency-dollar"></i> 财务管理
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主要内容区域 -->
+            <div class="col-md-10">
+                <h1 class="page-title">仪表盘</h1>
+
+                <!-- 智能看板 - 核心指标卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card metric-primary">
+                            <h3>12</h3>
+                            <p>推广中的活动数量</p>
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card metric-success">
+                            <h3>186</h3>
+                            <p>参加推广的校园代理人数</p>
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card metric-info">
+                            <h3>1,428</h3>
+                            <p>活动报名人数</p>
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card metric-warning">
+                            <h3>856</h3>
+                            <p>当日活动签到人数</p>
+                            <i class="bi bi-check2-square"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能看板 - 实时动态流 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <i class="bi bi-activity"></i> 实时动态流
+                            </div>
+                            <div class="card-body activity-feed">
+                                <div class="activity-item">
+                                    <div class="activity-icon new-user">
+                                        <i class="bi bi-person-plus"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">新增报名学生</div>
+                                        <div class="activity-time">张三（北京大学）报名了"2024考研数学冲刺班"</div>
+                                        <div class="activity-time">2分钟前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon new-agent">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">新增代理</div>
+                                        <div class="activity-time">李明（清华大学）通过审核成为校园代理</div>
+                                        <div class="activity-time">15分钟前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-start">
+                                        <i class="bi bi-play-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">活动节点提醒</div>
+                                        <div class="activity-time">校园代理王五开始推广"雅思口语特训营"活动</div>
+                                        <div class="activity-time">30分钟前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-signup">
+                                        <i class="bi bi-share"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">裂变推广</div>
+                                        <div class="activity-time">赵六通过分享链接带来了3个新报名学生</div>
+                                        <div class="activity-time">1小时前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon new-user">
+                                        <i class="bi bi-person-plus"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">新增报名学生</div>
+                                        <div class="activity-time">钱七（复旦大学）报名了"GRE词汇速成班"</div>
+                                        <div class="activity-time">2小时前</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 代理管理概览 -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <i class="bi bi-people"></i> 代理管理概览
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">186</div>
+                                            <div class="stat-label">代理总数</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">142</div>
+                                            <div class="stat-label">活跃代理数</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">3.2</div>
+                                            <div class="stat-label">平均推广活动数</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">7.8</div>
+                                            <div class="stat-label">平均带来报名人数</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container">
+                                    <canvas id="agentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 活动中心概览 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <i class="bi bi-calendar-event"></i> 活动中心概览
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="activityChart"></canvas>
+                                </div>
+                                
+                                <div class="table-container mt-3">
+                                    <table class="table data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>活动名称</th>
+                                                <th>参与人数</th>
+                                                <th>状态</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>2024考研数学冲刺班</td>
+                                                <td>256</td>
+                                                <td><span class="activity-status status-ongoing">进行中</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>雅思口语特训营</td>
+                                                <td>186</td>
+                                                <td><span class="activity-status status-ongoing">进行中</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>GRE词汇速成班</td>
+                                                <td>142</td>
+                                                <td><span class="activity-status status-ongoing">进行中</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>托福写作强化班</td>
+                                                <td>98</td>
+                                                <td><span class="activity-status status-ended">已结束</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 财务管理概览 -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="bi bi-currency-dollar"></i> 财务管理概览
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">¥85,600</div>
+                                            <div class="stat-label">总预算统计</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">¥42,800</div>
+                                            <div class="stat-label">总佣金统计</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">¥38,520</div>
+                                            <div class="stat-label">已核对金额</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">¥4,280</div>
+                                            <div class="stat-label">待核对金额</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="finance-note">
+                                    <i class="bi bi-info-circle"></i> P0版本特别说明：财务数据仅用于各端口进行核对统计，不包含打款及提现相关功能。所有金额数据仅作展示和核对用途，实际结算需通过线下或其他渠道完成。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 线索管理概览 -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-danger text-white">
+                                <i class="bi bi-person-lines-fill"></i> 线索管理概览
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">1,428</div>
+                                            <div class="stat-label">总线索数</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">856</div>
+                                            <div class="stat-label">已联系线索</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">428</div>
+                                            <div class="stat-label">已转化线索</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card">
+                                            <div class="stat-value">12</div>
+                                            <div class="stat-label">重复线索</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="filter-section">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="timeFilter" class="form-label">时间筛选</label>
+                                                <select class="form-select" id="timeFilter">
+                                                    <option selected>最近7天</option>
+                                                    <option>最近30天</option>
+                                                    <option>最近3个月</option>
+                                                    <option>自定义时间</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="sourceFilter" class="form-label">来源筛选</label>
+                                                <select class="form-select" id="sourceFilter">
+                                                    <option selected>全部来源</option>
+                                                    <option>校园代理推广</option>
+                                                    <option>学生分享</option>
+                                                    <option>直接报名</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="statusFilter" class="form-label">状态筛选</label>
+                                                <select class="form-select" id="statusFilter">
+                                                    <option selected>全部状态</option>
+                                                    <option>新线索</option>
+                                                    <option>已联系</option>
+                                                    <option>已转化</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-container">
+                                    <table class="table data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>姓名</th>
+                                                <th>电话</th>
+                                                <th>学校</th>
+                                                <th>来源</th>
+                                                <th>状态</th>
+                                                <th>时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>张三</td>
+                                                <td>138****1234</td>
+                                                <td>北京大学</td>
+                                                <td>校园代理推广</td>
+                                                <td><span class="lead-status status-new">新线索</span></td>
+                                                <td>2024-05-15 14:30</td>
+                                            </tr>
+                                            <tr>
+                                                <td>李四</td>
+                                                <td>139****5678<span class="duplicate-badge">重复</span></td>
+                                                <td>清华大学</td>
+                                                <td>学生分享</td>
+                                                <td><span class="lead-status status-contacted">已联系</span></td>
+                                                <td>2024-05-15 13:45</td>
+                                            </tr>
+                                            <tr>
+                                                <td>王五</td>
+                                                <td>137****9012</td>
+                                                <td>复旦大学</td>
+                                                <td>直接报名</td>
+                                                <td><span class="lead-status status-converted">已转化</span></td>
+                                                <td>2024-05-15 12:20</td>
+                                            </tr>
+                                            <tr>
+                                                <td>赵六</td>
+                                                <td>136****3456</td>
+                                                <td>上海交通大学</td>
+                                                <td>校园代理推广</td>
+                                                <td><span class="lead-status status-contacted">已联系</span></td>
+                                                <td>2024-05-15 11:15</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 代理统计图表
+        const agentCtx = document.getElementById('agentChart').getContext('2d');
+        const agentChart = new Chart(agentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['北京大学', '清华大学', '复旦大学', '上海交通大学', '浙江大学', '南京大学'],
+                datasets: [{
+                    label: '代理数量',
+                    data: [32, 28, 24, 22, 18, 16],
+                    backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                    borderColor: 'rgba(67, 97, 238, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '各学校代理分布'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 活动参与人数图表
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: ['5月9日', '5月10日', '5月11日', '5月12日', '5月13日', '5月14日', '5月15日'],
+                datasets: [{
+                    label: '活动报名人数',
+                    data: [120, 135, 150, 142, 168, 185, 198],
+                    backgroundColor: 'rgba(0, 180, 216, 0.2)',
+                    borderColor: 'rgba(0, 180, 216, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '最近7天活动报名趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 模拟实时数据更新
+        setInterval(() => {
+            // 随机更新核心指标
+            const metrics = document.querySelectorAll('.metric-card h3');
+            metrics.forEach(metric => {
+                const currentValue = parseInt(metric.textContent.replace(/[^0-9]/g, ''));
+                const change = Math.floor(Math.random() * 5) - 2; // -2到2的随机变化
+                const newValue = Math.max(0, currentValue + change);
+                if (metric.textContent.includes('¥')) {
+                    metric.textContent = `¥${newValue.toLocaleString()}`;
+                } else {
+                    metric.textContent = newValue.toLocaleString();
+                }
+            });
+        }, 30000); // 每30秒更新一次
+    </script>
+</body>
+</html>

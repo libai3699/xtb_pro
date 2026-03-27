@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { hashPassword } from '../../common/utils/auth.util';
+import { hashPassword, verifyPassword } from '../../common/utils/auth.util';
 import { serializeValue } from '../../common/utils/serialize.util';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateAppPasswordDto } from './dto/update-app-password.dto';
+import { UpdateAppProfileDto } from './dto/update-app-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -38,6 +40,12 @@ export class UserService {
       if (!mobile) {
         throw new BadRequestException('代理用户必须填写手机号');
       }
+      if (!account) {
+        throw new BadRequestException('代理用户必须设置登录账号');
+      }
+      if (!password) {
+        throw new BadRequestException('代理用户必须设置登录密码');
+      }
       if (!dto.realName?.trim()) {
         throw new BadRequestException('代理用户必须填写真实姓名');
       }
@@ -50,7 +58,9 @@ export class UserService {
       if (!password) {
         throw new BadRequestException('学生用户必须设置登录密码');
       }
+    }
 
+    if (account) {
       const exists = await this.prisma.appUser.findFirst({
         where: {
           account,
@@ -66,8 +76,8 @@ export class UserService {
       const user = await tx.appUser.create({
         data: {
           role,
-          account: role === 'student' ? account : null,
-          password: role === 'student' ? hashPassword(password!) : null,
+          account,
+          password: password ? hashPassword(password) : null,
           nickname,
           mobile,
           avatar: dto.avatar?.trim() || undefined,
@@ -121,10 +131,14 @@ export class UserService {
 
     if (nextRole === 'agent') {
       const effectiveMobile = nextMobile === undefined ? current.mobile : nextMobile;
+      const effectiveAccount = nextAccount === undefined ? current.account : nextAccount;
       const effectiveRealName = nextRealName || current.agentProfile?.realName;
 
       if (!effectiveMobile) {
         throw new BadRequestException('代理用户必须填写手机号');
+      }
+      if (!effectiveAccount) {
+        throw new BadRequestException('代理用户必须设置登录账号');
       }
       if (!effectiveRealName) {
         throw new BadRequestException('代理用户必须填写真实姓名');
@@ -136,10 +150,12 @@ export class UserService {
       if (!effectiveAccount) {
         throw new BadRequestException('学生用户必须设置登录账号');
       }
+    }
 
+    if (nextAccount) {
       const duplicate = await this.prisma.appUser.findFirst({
         where: {
-          account: effectiveAccount,
+          account: nextAccount,
           id: {
             not: current.id,
           },
@@ -160,13 +176,8 @@ export class UserService {
           mobile: nextMobile,
           avatar: dto.avatar !== undefined ? dto.avatar.trim() || null : undefined,
           status: dto.status,
-          account: nextRole === 'student' ? nextAccount : null,
-          password:
-            nextRole === 'student'
-              ? nextPassword
-                ? hashPassword(nextPassword)
-                : undefined
-              : null,
+          account: nextAccount,
+          password: nextPassword ? hashPassword(nextPassword) : undefined,
         },
       });
 
@@ -261,6 +272,103 @@ export class UserService {
       code: 0,
       message: 'ok',
       data: serializeValue(list.map(({ password, ...rest }) => rest)),
+    };
+  }
+
+  async getAppUserProfile(id: number) {
+    const user = await this.prisma.appUser.findUnique({
+      where: { id: BigInt(id) },
+      include: {
+        agentProfile: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    const { password, ...rest } = user;
+    return {
+      code: 0,
+      message: 'ok',
+      data: serializeValue(rest),
+    };
+  }
+
+  async updateAppUserProfile(dto: UpdateAppProfileDto) {
+    const user = await this.prisma.appUser.findUnique({
+      where: { id: BigInt(dto.userId) },
+      include: { agentProfile: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      await tx.appUser.update({
+        where: { id: user.id },
+        data: {
+          nickname: dto.nickname !== undefined ? dto.nickname.trim() || null : undefined,
+          mobile: dto.mobile !== undefined ? dto.mobile.trim() || null : undefined,
+          avatar: dto.avatar !== undefined ? dto.avatar.trim() || null : undefined,
+        },
+      });
+
+      if (user.role === 'agent' && user.agentProfile) {
+        await tx.agentProfile.update({
+          where: { userId: user.id },
+          data: {
+            realName: dto.realName !== undefined ? dto.realName.trim() || user.agentProfile.realName : undefined,
+            schoolName: dto.schoolName !== undefined ? dto.schoolName.trim() || null : undefined,
+            majorName: dto.majorName !== undefined ? dto.majorName.trim() || null : undefined,
+            gradeName: dto.gradeName !== undefined ? dto.gradeName.trim() || null : undefined,
+            inviteCode: dto.inviteCode !== undefined ? dto.inviteCode.trim() || null : undefined,
+          },
+        });
+      }
+
+      return tx.appUser.findUnique({
+        where: { id: user.id },
+        include: { agentProfile: true },
+      });
+    });
+
+    const { password, ...rest } = updated!;
+    return {
+      code: 0,
+      message: '更新成功',
+      data: serializeValue(rest),
+    };
+  }
+
+  async updateAppUserPassword(dto: UpdateAppPasswordDto) {
+    const user = await this.prisma.appUser.findUnique({
+      where: { id: BigInt(dto.userId) },
+    });
+
+    if (!user || !user.password) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    if (!verifyPassword(dto.oldPassword, user.password)) {
+      throw new BadRequestException('原密码不正确');
+    }
+
+    if (dto.oldPassword === dto.newPassword) {
+      throw new BadRequestException('新密码不能与原密码相同');
+    }
+
+    await this.prisma.appUser.update({
+      where: { id: user.id },
+      data: {
+        password: hashPassword(dto.newPassword.trim()),
+      },
+    });
+
+    return {
+      code: 0,
+      message: '密码修改成功',
     };
   }
 }

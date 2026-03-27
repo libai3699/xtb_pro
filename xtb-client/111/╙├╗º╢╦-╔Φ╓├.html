@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端设置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .settings-section {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            padding: 16px 20px 8px;
+            background: white;
+        }
+        .settings-list {
+            background: white;
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .setting-item:hover {
+            background: #f8fafc;
+        }
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        .setting-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .setting-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            margin-right: 12px;
+        }
+        .setting-text {
+            flex: 1;
+        }
+        .setting-title {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        .setting-desc {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .setting-value {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-right: 8px;
+        }
+        .setting-arrow {
+            color: #d1d5db;
+            font-size: 12px;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #667eea;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px;
+            transition: opacity 0.2s;
+        }
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+        .version-info {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 12px;
+            padding: 20px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">设置</h1>
+                <p class="page-subtitle">管理您的账户和偏好设置</p>
+            </div>
+            
+            <!-- 账户设置 -->
+            <div class="settings-section">
+                <div class="section-title">账户设置</div>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">个人信息</div>
+                                <div class="setting-desc">修改姓名、头像等基本信息</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">已完善</div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">安全设置</div>
+                                <div class="setting-desc">密码修改、登录保护</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">已开启</div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">钱包设置</div>
+                                <div class="setting-desc">支付密码、银行卡管理</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">已绑定</div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 通知设置 -->
+            <div class="settings-section">
+                <div class="section-title">通知设置</div>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">推送通知</div>
+                                <div class="setting-desc">接收活动提醒和系统通知</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">邮件通知</div>
+                                <div class="setting-desc">接收重要邮件提醒</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-sms"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">短信通知</div>
+                                <div class="setting-desc">接收重要短信提醒</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 隐私设置 -->
+            <div class="settings-section">
+                <div class="section-title">隐私设置</div>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">个人资料可见性</div>
+                                <div class="setting-desc">谁可以看到您的个人信息</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">仅好友</div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">搜索可见性</div>
+                                <div class="setting-desc">是否允许被搜索到</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">好友推荐</div>
+                                <div class="setting-desc">是否接收好友推荐</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 通用设置 -->
+            <div class="settings-section">
+                <div class="section-title">通用设置</div>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">语言设置</div>
+                                <div class="setting-desc">切换应用显示语言</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">简体中文</div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">深色模式</div>
+                                <div class="setting-desc">切换应用主题模式</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">自动下载</div>
+                                <div class="setting-desc">WiFi下自动下载更新</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关于与帮助 -->
+            <div class="settings-section">
+                <div class="section-title">关于与帮助</div>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">帮助中心</div>
+                                <div class="setting-desc">常见问题和使用指南</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">用户协议</div>
+                                <div class="setting-desc">查看服务条款和隐私政策</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="setting-text">
+                                <div class="setting-title">评价应用</div>
+                                <div class="setting-desc">给我们评分和反馈</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退出登录 -->
+            <button class="logout-btn">退出登录</button>
+            
+            <!-- 版本信息 -->
+            <div class="version-info">
+                校推宝Pro v2.1.0<br>
+                © 2024 校推宝科技 版权所有
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,6 +13,17 @@
           <el-menu-item index="/business/lead">线索管理</el-menu-item>
           <el-menu-item index="/business/order">订单管理</el-menu-item>
         </el-sub-menu>
+        <el-sub-menu index="/operation">
+          <template #title>内容运营</template>
+          <el-menu-item index="/operation/content">内容管理</el-menu-item>
+          <el-menu-item index="/operation/reward-goods">积分商品</el-menu-item>
+          <el-menu-item index="/operation/reward-redeem-order">兑换订单</el-menu-item>
+          <el-menu-item index="/operation/message">消息中心</el-menu-item>
+          <el-menu-item index="/operation/certificate">证书管理</el-menu-item>
+          <el-menu-item index="/operation/learning-record">学习记录</el-menu-item>
+          <el-menu-item index="/operation/agent-review">代理评价</el-menu-item>
+          <el-menu-item index="/operation/feedback">意见反馈</el-menu-item>
+        </el-sub-menu>
         <el-sub-menu index="/system">
           <template #title>系统管理</template>
           <el-menu-item index="/system/admin-user">管理员</el-menu-item>
@@ -93,4 +104,3 @@ function logout() {
   color: #334155;
 }
 </style>
-

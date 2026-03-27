@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 机构端财务管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            padding: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .finance-overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .overview-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        .overview-amount {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .overview-trend {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .finance-tabs {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .finance-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .finance-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .transaction-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .transaction-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1f2937;
+        }
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .amount-income {
+            color: #10b981;
+        }
+        .amount-expense {
+            color: #ef4444;
+        }
+        .transaction-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .info-item i {
+            margin-right: 6px;
+            color: #667eea;
+        }
+        .transaction-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #1f2937;
+        }
+        .chart-placeholder {
+            height: 120px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">财务管理</h1>
+                <div class="text-sm text-gray-500">本月</div>
+            </div>
+            
+            <!-- 财务概览 -->
+            <div class="finance-overview">
+                <div class="overview-title">账户余额</div>
+                <div class="overview-amount">¥ 156,800.00</div>
+                <div class="overview-trend">较上月增长 12.5%</div>
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value amount-income">¥ 89,600</div>
+                    <div class="stat-label">本月收入</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value amount-expense">¥ 23,400</div>
+                    <div class="stat-label">本月支出</div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="chart-container">
+                <div class="chart-title">收支趋势</div>
+                <div class="chart-placeholder">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    收入支出趋势图表
+                </div>
+            </div>
+            
+            <!-- 财务标签页 -->
+            <div class="finance-tabs">
+                <div class="finance-tab active">全部记录</div>
+                <div class="finance-tab">收入</div>
+                <div class="finance-tab">支出</div>
+            </div>
+            
+            <!-- 交易记录 -->
+            <div class="transaction-list">
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <div class="transaction-title">英语培训收入</div>
+                        <div class="transaction-amount amount-income">+¥ 8,900</div>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>今天 14:30</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <span>张三代理</span>
+                        </div>
+                    </div>
+                    <div class="transaction-status status-completed">已完成</div>
+                </div>
+                
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <div class="transaction-title">代理佣金支出</div>
+                        <div class="transaction-amount amount-expense">-¥ 2,340</div>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>昨天 10:15</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <span>李四代理</span>
+                        </div>
+                    </div>
+                    <div class="transaction-status status-completed">已完成</div>
+                </div>
+                
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <div class="transaction-title">考研数学收入</div>
+                        <div class="transaction-amount amount-income">+¥ 6,500</div>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>3天前</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <span>王五代理</span>
+                        </div>
+                    </div>
+                    <div class="transaction-status status-completed">已完成</div>
+                </div>
+                
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <div class="transaction-title">平台服务费</div>
+                        <div class="transaction-amount amount-expense">-¥ 890</div>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>5天前</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span>平台服务</span>
+                        </div>
+                    </div>
+                    <div class="transaction-status status-pending">处理中</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-users text-xl mb-1"></i>
+                <span>代理</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-tasks text-xl mb-1"></i>
+                <span>任务</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span>线索</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-wallet text-xl mb-1"></i>
+                <span>财务</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

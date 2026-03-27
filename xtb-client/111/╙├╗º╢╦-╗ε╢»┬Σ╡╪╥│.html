@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 活动详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .activity-header {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .activity-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 8px;
+        }
+        .activity-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .activity-content {
+            padding: 20px;
+        }
+        .reward-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .info-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #4b5563;
+        }
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        .info-item i {
+            width: 20px;
+            color: #667eea;
+            margin-right: 12px;
+        }
+        .description-section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        .description-text {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .participants-section {
+            margin-bottom: 20px;
+        }
+        .participants-list {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .participant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            margin-right: -8px;
+            border: 2px solid white;
+        }
+        .participants-count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .action-section {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 16px 20px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .share-btn {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            color: #4b5563;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .join-btn {
+            flex: 2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 活动头部 -->
+            <div class="activity-header">
+                <div class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="activity-title">暑期英语培训课程</div>
+                <div class="activity-subtitle">新东方教育 · 专业英语提升</div>
+            </div>
+            
+            <!-- 活动内容 -->
+            <div class="activity-content">
+                <!-- 奖励徽章 -->
+                <div class="reward-badge">参与奖励 ¥50</div>
+                
+                <!-- 基本信息 -->
+                <div class="info-section">
+                    <div class="info-item">
+                        <i class="fas fa-building"></i>
+                        <span>主办机构：新东方教育科技集团</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>活动时间：2024年7月1日 - 8月31日</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>活动地点：线上直播 + 线下校区</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>课程时长：2个月，共48课时</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>适合人群：大学生、职场人士</span>
+                    </div>
+                </div>
+                
+                <!-- 活动描述 -->
+                <div class="description-section">
+                    <div class="section-title">活动介绍</div>
+                    <div class="description-text">
+                        新东方暑期英语培训课程专为大学生和职场人士设计，通过系统化的教学体系，帮助学员快速提升英语水平。课程涵盖听说读写全方位训练，采用小班教学模式，确保每位学员都能得到充分关注。
+                        <br><br>
+                        课程特色：
+                        • 资深外教+中教联合授课
+                        • 个性化学习方案定制
+                        • 实战场景模拟训练
+                        • 学习进度实时跟踪
+                    </div>
+                </div>
+                
+                <!-- 参与人数 -->
+                <div class="participants-section">
+                    <div class="section-title">已参与学员</div>
+                    <div class="participants-list">
+                        <div class="participant-avatar">张</div>
+                        <div class="participant-avatar">李</div>
+                        <div class="participant-avatar">王</div>
+                        <div class="participant-avatar">陈</div>
+                        <div class="participant-avatar">+152</div>
+                    </div>
+                    <div class="participants-count">已有156位学员参与本课程</div>
+                </div>
+                
+                <!-- 参与要求 -->
+                <div class="description-section">
+                    <div class="section-title">参与要求</div>
+                    <div class="description-text">
+                        • 年满18周岁的在校大学生或职场人士
+                        • 具备基础英语水平（建议CET-4以上）
+                        • 能够保证每周至少8小时学习时间
+                        • 完成课程学习并通过最终考核
+                    </div>
+                </div>
+                
+                <!-- 奖励说明 -->
+                <div class="description-section">
+                    <div class="section-title">奖励说明</div>
+                    <div class="description-text">
+                        成功完成课程学习并通过考核的学员，将获得：
+                        • 新东方官方结业证书
+                        • 50元现金奖励
+                        • 优秀学员推荐就业机会
+                        • 后续课程优惠资格
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部操作栏 -->
+            <div class="action-section">
+                <div class="action-buttons">
+                    <button class="share-btn">
+                        <i class="fas fa-share-alt"></i>
+                        分享
+                    </button>
+                    <button class="join-btn">立即参与</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-compass text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

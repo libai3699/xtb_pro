@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CampaignService } from './campaign.service';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { CreateShareDto } from './dto/create-share.dto';
+import { VisitShareDto } from './dto/visit-share.dto';
 
 @Controller()
 export class CampaignController {
@@ -25,5 +27,19 @@ export class CampaignController {
   getDetail(@Param('id') id: string) {
     return this.campaignService.getDetail(Number(id));
   }
-}
 
+  @Post('app/share/create')
+  createShare(@Body() dto: CreateShareDto) {
+    return this.campaignService.createShare(dto);
+  }
+
+  @Post('app/share/visit')
+  visitShare(@Body() dto: VisitShareDto) {
+    return this.campaignService.visitShare(dto);
+  }
+
+  @Get('app/share/list/:userId')
+  getShareList(@Param('userId') userId: string) {
+    return this.campaignService.getShareList(Number(userId));
+  }
+}

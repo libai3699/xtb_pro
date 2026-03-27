@@ -30,17 +30,15 @@ const items = computed(() => {
   }
 
   return [
-    { key: 'home', label: '首页', path: '/pages/student/home', icon: '⌂', activeIcon: '⌂' },
-    { key: 'campaign', label: '活动', path: '/pages/campaign/list', icon: '◫', activeIcon: '◩' },
-    { key: 'order', label: '订单', path: '/pages/order/list', icon: '≡', activeIcon: '▤' },
+    { key: 'home', label: '广场', path: '/pages/student/home', icon: '⌂', activeIcon: '⌂' },
+    { key: 'reward', label: '奖励', path: '/pages/reward/index', icon: '✦', activeIcon: '✸' },
+    { key: 'news', label: '资讯', path: '/pages/news/list', icon: '◨', activeIcon: '▣' },
     { key: 'my', label: '我的', path: '/pages/my/index', icon: '○', activeIcon: '◉' },
   ];
 });
 
 function go(path: string) {
-  if (path) {
-    uni.reLaunch({ url: path });
-  }
+  uni.reLaunch({ url: path });
 }
 </script>
 

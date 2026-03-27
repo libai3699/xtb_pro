@@ -28,6 +28,25 @@
       </view>
     </view>
 
+    <view class="quick-grid">
+      <view class="quick-card" @click="goCampaignList">
+        <view class="quick-title">活动列表</view>
+        <view class="quick-desc">查看可推广活动</view>
+      </view>
+      <view class="quick-card" @click="goShareRecords">
+        <view class="quick-title">推广记录</view>
+        <view class="quick-desc">查看活动转化表现</view>
+      </view>
+      <view class="quick-card" @click="goMessages">
+        <view class="quick-title">消息通知</view>
+        <view class="quick-desc">处理系统提醒和任务通知</view>
+      </view>
+      <view class="quick-card" @click="goHelp">
+        <view class="quick-title">帮助中心</view>
+        <view class="quick-desc">查看规则和常见问题</view>
+      </view>
+    </view>
+
     <view class="section-header">
       <view class="section-title">可推广活动</view>
       <view class="section-link" @click="goStats">查看完整数据</view>
@@ -52,7 +71,7 @@
 import { reactive, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import AppTabbar from '@/components/app-tabbar.vue';
-import { getCampaignList, type CampaignItem } from '@/api/campaign';
+import { createShareRecord, getCampaignList, type CampaignItem } from '@/api/campaign';
 import { getMyAgentStats } from '@/api/agent';
 import { useUserStore } from '@/store/user';
 import { buildCampaignDetailPath, buildH5CampaignShareUrl, redirectToLogin } from '@/utils/app';
@@ -87,8 +106,34 @@ function goStats() {
   uni.reLaunch({ url: '/pages/agent/stats' });
 }
 
-function copyShareLink(campaignId: string) {
+function goCampaignList() {
+  uni.navigateTo({ url: '/pages/campaign/list' });
+}
+
+function goShareRecords() {
+  uni.navigateTo({ url: '/pages/share/list' });
+}
+
+function goMessages() {
+  uni.navigateTo({ url: '/pages/message/list' });
+}
+
+function goHelp() {
+  uni.navigateTo({ url: '/pages/help/list' });
+}
+
+async function copyShareLink(campaignId: string) {
   const link = buildH5CampaignShareUrl(campaignId, userStore.id);
+  try {
+    await createShareRecord({
+      campaignId: Number(campaignId),
+      agentUserId: Number(userStore.id),
+      shareUrl: link,
+    });
+  } catch {
+    // Ignore share record creation failures and keep copy action available.
+  }
+
   uni.setClipboardData({
     data: link,
     success: () => {
@@ -100,10 +145,7 @@ function copyShareLink(campaignId: string) {
 async function fetchData() {
   loading.value = true;
   try {
-    const [campaignRes, statsRes] = await Promise.all([
-      getCampaignList(),
-      getMyAgentStats(userStore.id),
-    ]);
+    const [campaignRes, statsRes] = await Promise.all([getCampaignList(), getMyAgentStats(userStore.id)]);
     list.value = campaignRes.data;
     Object.assign(stats, statsRes.data);
   } catch (error) {
@@ -130,9 +172,17 @@ onShow(() => {
     #f5f7fb;
 }
 
-.hero {
+.hero,
+.campaign-card,
+.card,
+.quick-card {
   border-radius: 28rpx;
-  padding: 32rpx;
+  padding: 24rpx;
+  background: #fff;
+  margin-bottom: 16rpx;
+}
+
+.hero {
   background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
   color: #fff;
   box-shadow: 0 24rpx 60rpx rgba(15, 118, 110, 0.2);
@@ -162,7 +212,8 @@ onShow(() => {
   font-size: 22rpx;
 }
 
-.stats-grid {
+.stats-grid,
+.quick-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16rpx;
@@ -186,6 +237,19 @@ onShow(() => {
   opacity: 0.92;
 }
 
+.quick-title {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.quick-desc,
+.campaign-desc,
+.muted {
+  margin-top: 10rpx;
+  color: #64748b;
+  line-height: 1.7;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -203,32 +267,15 @@ onShow(() => {
   font-size: 24rpx;
 }
 
-.card,
-.campaign-card {
-  background: #fff;
-  border-radius: 22rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
-}
-
 .campaign-title {
   font-size: 30rpx;
   font-weight: 700;
-}
-
-.campaign-desc {
-  margin: 14rpx 0 18rpx;
-  color: #64748b;
-  line-height: 1.7;
 }
 
 .campaign-foot {
   display: flex;
   justify-content: flex-end;
   gap: 12rpx;
-}
-
-.muted {
-  color: #94a3b8;
+  margin-top: 18rpx;
 }
 </style>

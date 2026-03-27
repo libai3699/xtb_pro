@@ -67,6 +67,62 @@ const router = createRouter({
           },
         },
         {
+          path: 'operation/content',
+          component: () => import('@/views/content/index.vue'),
+          meta: {
+            title: '内容管理',
+          },
+        },
+        {
+          path: 'operation/reward-goods',
+          component: () => import('@/views/reward-goods/index.vue'),
+          meta: {
+            title: '积分商品',
+          },
+        },
+        {
+          path: 'operation/reward-redeem-order',
+          component: () => import('@/views/reward-redeem-order/index.vue'),
+          meta: {
+            title: '兑换订单',
+          },
+        },
+        {
+          path: 'operation/message',
+          component: () => import('@/views/message/index.vue'),
+          meta: {
+            title: '消息中心',
+          },
+        },
+        {
+          path: 'operation/certificate',
+          component: () => import('@/views/certificate/index.vue'),
+          meta: {
+            title: '证书管理',
+          },
+        },
+        {
+          path: 'operation/learning-record',
+          component: () => import('@/views/learning-record/index.vue'),
+          meta: {
+            title: '学习记录',
+          },
+        },
+        {
+          path: 'operation/agent-review',
+          component: () => import('@/views/agent-review/index.vue'),
+          meta: {
+            title: '代理评价',
+          },
+        },
+        {
+          path: 'operation/feedback',
+          component: () => import('@/views/feedback/index.vue'),
+          meta: {
+            title: '意见反馈',
+          },
+        },
+        {
           path: 'system/admin-user',
           component: () => import('@/views/admin-user/index.vue'),
           meta: {
@@ -103,4 +159,3 @@ router.beforeEach((to) => {
 });
 
 export default router;
-

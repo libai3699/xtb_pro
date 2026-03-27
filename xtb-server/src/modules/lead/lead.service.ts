@@ -37,19 +37,55 @@ export class LeadService {
   }
 
   async submit(dto: CreateLeadDto) {
-    const lead = await this.prisma.lead.create({
-      data: {
-        campaignId: BigInt(dto.campaignId),
-        agentUserId: dto.agentUserId ? BigInt(dto.agentUserId) : undefined,
-        studentUserId: dto.studentUserId ? BigInt(dto.studentUserId) : undefined,
-        name: dto.name,
-        mobile: dto.mobile,
-        schoolName: dto.schoolName,
-        majorName: dto.majorName,
-        gradeName: dto.gradeName,
-        remark: dto.remark,
-        status: 0,
-      },
+    const campaignId = BigInt(dto.campaignId);
+    const agentUserId = dto.agentUserId ? BigInt(dto.agentUserId) : undefined;
+
+    const lead = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.lead.create({
+        data: {
+          campaignId,
+          agentUserId,
+          studentUserId: dto.studentUserId ? BigInt(dto.studentUserId) : undefined,
+          name: dto.name,
+          mobile: dto.mobile,
+          schoolName: dto.schoolName,
+          majorName: dto.majorName,
+          gradeName: dto.gradeName,
+          remark: dto.remark,
+          status: 0,
+        },
+      });
+
+      if (agentUserId) {
+        const share = await tx.campaignShare.findFirst({
+          where: {
+            campaignId,
+            agentUserId,
+          },
+        });
+
+        if (share) {
+          await tx.campaignShare.update({
+            where: { id: share.id },
+            data: {
+              leadCount: {
+                increment: 1,
+              },
+            },
+          });
+        } else {
+          await tx.campaignShare.create({
+            data: {
+              campaignId,
+              agentUserId,
+              shareCode: `S${Date.now()}${Math.random().toString().slice(2, 8)}`,
+              leadCount: 1,
+            },
+          });
+        }
+      }
+
+      return created;
     });
 
     return {

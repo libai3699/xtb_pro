@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { createShareRecord, getCampaignDetail, visitShareRecord, type CampaignItem } from '@/api/campaign';
 import { createOrder } from '@/api/order';
-import { getCampaignDetail, type CampaignItem } from '@/api/campaign';
 import { useUserStore } from '@/store/user';
 import { buildCampaignDetailPath, buildH5CampaignShareUrl, redirectToLogin } from '@/utils/app';
 import { getCampaignReferral, saveCampaignReferral } from '@/utils/storage';
@@ -92,8 +92,18 @@ function goLogin() {
   redirectToLogin(buildCampaignDetailPath(campaignId.value, getActiveAgentUserId() || undefined));
 }
 
-function copyShareLink() {
+async function copyShareLink() {
   const shareLink = buildH5CampaignShareUrl(campaignId.value, userStore.id);
+  try {
+    await createShareRecord({
+      campaignId: Number(campaignId.value),
+      agentUserId: Number(userStore.id),
+      shareUrl: shareLink,
+    });
+  } catch {
+    // Ignore share record creation failures and keep copy action available.
+  }
+
   uni.setClipboardData({
     data: shareLink,
     success: () => uni.showToast({ title: '推广链接已复制', icon: 'success' }),
@@ -138,6 +148,15 @@ onLoad(async (options) => {
       campaignId: campaignId.value,
       agentUserId: routeAgentUserId.value,
     });
+
+    try {
+      await visitShareRecord({
+        campaignId: Number(campaignId.value),
+        agentUserId: Number(routeAgentUserId.value),
+      });
+    } catch {
+      // Ignore share visit failures in the UI layer.
+    }
   }
 
   if (!campaignId.value) {

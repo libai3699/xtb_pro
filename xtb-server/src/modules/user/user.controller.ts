@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateAppPasswordDto } from './dto/update-app-password.dto';
+import { UpdateAppProfileDto } from './dto/update-app-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller()
@@ -30,5 +32,20 @@ export class UserController {
   @Get('admin/admin-user/list')
   getAdminManagerList() {
     return this.userService.getAdminManagerList();
+  }
+
+  @Get('app/user/profile/:id')
+  getAppUserProfile(@Param('id') id: string) {
+    return this.userService.getAppUserProfile(Number(id));
+  }
+
+  @Post('app/user/profile/update')
+  updateAppUserProfile(@Body() dto: UpdateAppProfileDto) {
+    return this.userService.updateAppUserProfile(dto);
+  }
+
+  @Post('app/user/password/update')
+  updateAppUserPassword(@Body() dto: UpdateAppPasswordDto) {
+    return this.userService.updateAppUserPassword(dto);
   }
 }

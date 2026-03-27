@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro项目页面导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .category-section {
+            margin-bottom: 40px;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .page-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .page-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .page-description {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .page-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .preview-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: white;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .feature-item::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>校推宝Pro项目页面导航</h1>
+            <p>一站式浏览所有项目页面，快速访问和预览</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">HTML页面</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">核心模块</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">用户端口</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据看板模块 -->
+        <div class="category-section">
+            <div class="category-title">📊 数据看板模块</div>
+            <div class="pages-grid">
+                <!-- 三端MVP数据看板 -->
+                <div class="page-card">
+                    <div class="page-icon">🌐</div>
+                    <div class="page-title">三端MVP数据看板</div>
+                    <div class="page-description">
+                        校推宝Pro三端统一数据监控平台，集成机构端、代理端、用户端核心数据
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">三端数据统一展示</li>
+                        <li class="feature-item">实时数据监控</li>
+                        <li class="feature-item">多维度数据分析</li>
+                    </ul>
+                    <a href="校推宝Pro三端MVP数据看板.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约15KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+                
+                <!-- 机构端数据看板 -->
+                <div class="page-card">
+                    <div class="page-icon">🏢</div>
+                    <div class="page-title">机构端数据看板</div>
+                    <div class="page-description">
+                        教育机构专属数据监控平台，展示活动推广效果和业务指标
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">机构数据总览</li>
+                        <li class="feature-item">活动效果分析</li>
+                        <li class="feature-item">代理绩效监控</li>
+                    </ul>
+                    <a href="校推宝Pro机构端数据看板.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约12KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+                
+                <!-- 代理端数据看板 -->
+                <div class="page-card">
+                    <div class="page-icon">👥</div>
+                    <div class="page-title">代理端数据看板</div>
+                    <div class="page-description">
+                        校园代理工作数据监控平台，展示任务完成情况和业绩统计
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">代理业绩统计</li>
+                        <li class="feature-item">任务完成情况</li>
+                        <li class="feature-item">收入数据分析</li>
+                    </ul>
+                    <a href="校推宝Pro代理端数据看板.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约10KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 机构端模块 -->
+        <div class="category-section">
+            <div class="category-title">🏢 机构端模块</div>
+            <div class="pages-grid">
+                <!-- 机构端仪表盘 -->
+                <div class="page-card">
+                    <div class="page-icon">📈</div>
+                    <div class="page-title">机构端仪表盘</div>
+                    <div class="page-description">
+                        教育机构管理后台主界面，集成核心功能模块和快捷操作
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">功能模块集成</li>
+                        <li class="feature-item">快捷操作入口</li>
+                        <li class="feature-item">系统状态监控</li>
+                    </ul>
+                    <a href="校推宝Pro机构端仪表盘.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约18KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+                
+                <!-- 机构端决策仪表盘 -->
+                <div class="page-card">
+                    <div class="page-icon">🎯</div>
+                    <div class="page-title">机构端决策仪表盘</div>
+                    <div class="page-description">
+                        高级数据分析和决策支持平台，提供深度业务洞察
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">深度数据分析</li>
+                        <li class="feature-item">决策支持工具</li>
+                        <li class="feature-item">趋势预测功能</li>
+                    </ul>
+                    <a href="校推宝Pro机构端决策仪表盘.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约20KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+                
+                <!-- 机构端决策仪表盘-优化版 -->
+                <div class="page-card">
+                    <div class="page-icon">✨</div>
+                    <div class="page-title">机构端决策仪表盘-优化版</div>
+                    <div class="page-description">
+                        优化后的决策支持平台，提升用户体验和交互效果
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">性能优化提升</li>
+                        <li class="feature-item">交互体验改进</li>
+                        <li class="feature-item">移动端适配</li>
+                    </ul>
+                    <a href="校推宝Pro机构端决策仪表盘-优化版.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约25KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+                
+                <!-- 机构端口页面规划 -->
+                <div class="page-card">
+                    <div class="page-icon">📋</div>
+                    <div class="page-title">机构端口页面规划</div>
+                    <div class="page-description">
+                        机构端整体页面架构规划，包含功能模块和导航设计
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">页面架构设计</li>
+                        <li class="feature-item">导航流程规划</li>
+                        <li class="feature-item">功能模块划分</li>
+                    </ul>
+                    <a href="校推宝Pro机构端口页面规划.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约30KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 微信小程序模块 -->
+        <div class="category-section">
+            <div class="category-title">📱 微信小程序模块</div>
+            <div class="pages-grid">
+                <!-- 微信小程序代理端口页面规划 -->
+                <div class="page-card">
+                    <div class="page-icon">👥</div>
+                    <div class="page-title">微信小程序代理端口页面规划</div>
+                    <div class="page-description">
+                        基于微信小程序规范的代理端页面规划，符合tabbar导航标准
+                    </div>
+                    <ul class="feature-list">
+                        <li class="feature-item">5个核心页面</li>
+                        <li class="feature-item">tabbar导航设计</li>
+                        <li class="feature-item">移动端优化</li>
+                    </ul>
+                    <a href="校推宝Pro微信小程序代理端口页面规划.html" class="preview-btn" target="_blank">查看预览</a>
+                    <div class="page-meta">
+                        <span>文件大小: 约22KB</span>
+                        <span>更新时间: 最新</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>校推宝Pro项目 • 一站式页面导航系统</p>
+            <p>当前服务器运行中: http://127.0.0.1:8080</p>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.page-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        // 点击卡片效果
+        document.querySelectorAll('.page-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('preview-btn')) {
+                    const link = this.querySelector('.preview-btn');
+                    if (link) {
+                        window.open(link.href, '_blank');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

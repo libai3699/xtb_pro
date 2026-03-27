@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端我的钱包</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .wallet-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .wallet-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .wallet-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .wallet-section {
+            padding: 20px;
+            background: white;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+        .income-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .transaction-list {
+            padding: 0;
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .transaction-info {
+            flex: 1;
+        }
+        .transaction-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .transaction-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .transaction-amount {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .amount-income {
+            color: #10b981;
+        }
+        .amount-expense {
+            color: #ef4444;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+        }
+        .quick-action {
+            text-align: center;
+            cursor: pointer;
+        }
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            color: #667eea;
+            font-size: 20px;
+        }
+        .action-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 钱包头部 -->
+            <div class="wallet-header">
+                <div class="balance-label">账户余额</div>
+                <div class="balance-amount">¥1,258.50</div>
+                <div class="wallet-actions">
+                    <div class="wallet-btn">
+                        <i class="fas fa-plus"></i>
+                        充值
+                    </div>
+                    <div class="wallet-btn">
+                        <i class="fas fa-arrow-up"></i>
+                        提现
+                    </div>
+                    <div class="wallet-btn">
+                        <i class="fas fa-exchange-alt"></i>
+                        转账
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 收入统计 -->
+            <div class="wallet-section">
+                <div class="section-title">收入统计</div>
+                <div class="income-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">¥850</div>
+                        <div class="stat-label">本月收入</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">完成活动</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">¥2,580</div>
+                        <div class="stat-label">累计收入</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 快捷操作 -->
+            <div class="quick-actions">
+                <div class="quick-action">
+                    <div class="action-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="action-label">收款码</div>
+                </div>
+                <div class="quick-action">
+                    <div class="action-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="action-label">银行卡</div>
+                </div>
+                <div class="quick-action">
+                    <div class="action-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-label">账单</div>
+                </div>
+                <div class="quick-action">
+                    <div class="action-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="action-label">设置</div>
+                </div>
+            </div>
+            
+            <!-- 最近交易 -->
+            <div class="wallet-section">
+                <div class="section-title">最近交易</div>
+                <div class="transaction-list">
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-title">活动奖励 - 编程培训</div>
+                            <div class="transaction-time">今天 14:30</div>
+                        </div>
+                        <div class="transaction-amount amount-income">+¥150.00</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-title">活动报名费</div>
+                            <div class="transaction-time">昨天 09:15</div>
+                        </div>
+                        <div class="transaction-amount amount-expense">-¥50.00</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-title">活动奖励 - 产品分享</div>
+                            <div class="transaction-time">3月12日</div>
+                        </div>
+                        <div class="transaction-amount amount-income">+¥200.00</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-title">提现到银行卡</div>
+                            <div class="transaction-time">3月10日</div>
+                        </div>
+                        <div class="transaction-amount amount-expense">-¥500.00</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-title">活动奖励 - 团队协作</div>
+                            <div class="transaction-time">3月8日</div>
+                        </div>
+                        <div class="transaction-amount amount-income">+¥180.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

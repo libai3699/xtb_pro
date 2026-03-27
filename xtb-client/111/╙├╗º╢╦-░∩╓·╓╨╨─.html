@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端帮助中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .search-box {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .help-categories {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .category-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .category-item:hover {
+            background: #f1f5f9;
+        }
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin: 0 auto 8px;
+        }
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .category-desc {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .faq-section {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            padding: 16px 20px 8px;
+        }
+        .faq-list {
+            padding: 0 20px 20px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #f3f4f6;
+            padding: 16px 0;
+            cursor: pointer;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-answer {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+            display: none;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .contact-section {
+            padding: 20px;
+            background: white;
+        }
+        .contact-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .contact-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .contact-item:hover {
+            background: #f1f5f9;
+        }
+        .contact-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            margin: 0 auto 8px;
+        }
+        .contact-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .contact-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">帮助中心</h1>
+                <p class="page-subtitle">常见问题和使用指南</p>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="搜索问题或关键词...">
+            </div>
+            
+            <!-- 帮助分类 -->
+            <div class="help-categories">
+                <div class="category-grid">
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="category-title">注册登录</div>
+                        <div class="category-desc">账户相关问题</div>
+                    </div>
+                    
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="category-title">活动参与</div>
+                        <div class="category-desc">报名和参与指南</div>
+                    </div>
+                    
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="category-title">钱包收益</div>
+                        <div class="category-desc">支付和提现问题</div>
+                    </div>
+                    
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <div class="category-title">分享推广</div>
+                        <div class="category-desc">分享和推广指南</div>
+                    </div>
+                    
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="category-title">证书学习</div>
+                        <div class="category-desc">学习和证书问题</div>
+                    </div>
+                    
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="category-title">设置问题</div>
+                        <div class="category-desc">应用设置相关</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 常见问题 -->
+            <div class="faq-section">
+                <div class="section-title">常见问题</div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            如何注册校推宝Pro账户？
+                            <i class="fas fa-chevron-down faq-arrow"></i>
+                        </div>
+                        <div class="faq-answer">
+                            您可以通过手机号注册，输入手机号后获取验证码，设置密码即可完成注册。也可以使用微信、QQ等第三方账号快速登录。
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            如何参与校园活动？
+                            <i class="fas fa-chevron-down faq-arrow"></i>
+                        </div>
+                        <div class="faq-answer">
+                            在首页或发现页面浏览活动，点击感兴趣的活动查看详情，点击"立即报名"按钮即可参与。部分活动可能需要审核。
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            如何获得收益？
+                            <i class="fas fa-chevron-down faq-arrow"></i>
+                        </div>
+                        <div class="faq-answer">
+                            通过分享活动给好友，好友成功参与后您将获得相应收益。收益可以在"我的钱包"中查看和提现。
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            如何获得学习证书？
+                            <i class="fas fa-chevron-down faq-arrow"></i>
+                        </div>
+                        <div class="faq-answer">
+                            完成相应的学习课程并通过考核后，系统会自动为您生成电子证书。证书可以在"我的证书"中查看和下载。
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            忘记密码怎么办？
+                            <i class="fas fa-chevron-down faq-arrow"></i>
+                        </div>
+                        <div class="faq-answer">
+                            在登录页面点击"忘记密码"，通过手机验证码验证身份后即可重置密码。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 联系我们 -->
+            <div class="contact-section">
+                <div class="contact-title">联系我们</div>
+                <div class="contact-methods">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-label">客服电话</div>
+                        <div class="contact-value">400-123-4567</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-label">客服邮箱</div>
+                        <div class="contact-value">support@xiaotuibao.com</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-weixin"></i>
+                        </div>
+                        <div class="contact-label">微信公众号</div>
+                        <div class="contact-value">校推宝Pro</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="contact-label">在线客服</div>
+                        <div class="contact-value">9:00-18:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAQ展开收起功能
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // 这里可以添加搜索逻辑
+        });
+    </script>
+</body>
+</html>

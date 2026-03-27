@@ -21,7 +21,79 @@
     {
       "path": "pages/student/home",
       "style": {
-        "navigationBarTitleText": "学生首页"
+        "navigationBarTitleText": "活动广场"
+      }
+    },
+    {
+      "path": "pages/reward/index",
+      "style": {
+        "navigationBarTitleText": "奖励中心"
+      }
+    },
+    {
+      "path": "pages/reward/orders",
+      "style": {
+        "navigationBarTitleText": "兑换记录"
+      }
+    },
+    {
+      "path": "pages/news/list",
+      "style": {
+        "navigationBarTitleText": "校园资讯"
+      }
+    },
+    {
+      "path": "pages/content/detail",
+      "style": {
+        "navigationBarTitleText": "内容详情"
+      }
+    },
+    {
+      "path": "pages/message/list",
+      "style": {
+        "navigationBarTitleText": "消息中心"
+      }
+    },
+    {
+      "path": "pages/favorite/list",
+      "style": {
+        "navigationBarTitleText": "我的收藏"
+      }
+    },
+    {
+      "path": "pages/certificate/list",
+      "style": {
+        "navigationBarTitleText": "我的证书"
+      }
+    },
+    {
+      "path": "pages/learning/list",
+      "style": {
+        "navigationBarTitleText": "学习记录"
+      }
+    },
+    {
+      "path": "pages/help/list",
+      "style": {
+        "navigationBarTitleText": "帮助中心"
+      }
+    },
+    {
+      "path": "pages/share/list",
+      "style": {
+        "navigationBarTitleText": "推广记录"
+      }
+    },
+    {
+      "path": "pages/feedback/create",
+      "style": {
+        "navigationBarTitleText": "意见反馈"
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "账号设置"
       }
     },
     {

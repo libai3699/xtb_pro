@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro微信小程序代理端口页面规划</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .page-structure {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .page-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .page-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .page-description {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .tabbar-preview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tabbar-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .tabbar-container {
+            display: flex;
+            justify-content: space-around;
+            background: #fff;
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tabbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tabbar-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tabbar-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .tabbar-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .feature-item::before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .specification {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .spec-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .spec-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .spec-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .spec-value {
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        .mobile-preview {
+            background: #222;
+            border-radius: 40px;
+            padding: 20px;
+            width: 375px;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-screen {
+            background: #fff;
+            border-radius: 30px;
+            height: 667px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mobile-header {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .mobile-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .mobile-tabbar {
+            height: 80px;
+            background: #fff;
+            display: flex;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .mobile-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .mobile-tab.active {
+            color: #667eea;
+        }
+        
+        .mobile-tab-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>校推宝Pro微信小程序代理端口页面规划</h1>
+            <p>基于微信小程序底部导航栏tabbar规范的页面分布设计</p>
+            <div style="font-size: 16px; color: #667eea; font-weight: 600;">
+                页面数量：5个核心页面 | 符合微信小程序tabbar规范
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-title">📋 页面规划总览</div>
+            <div style="text-align: center; font-size: 16px; color: #666; line-height: 1.8;">
+                根据微信小程序底部导航栏规范（最多5个页面），校推宝Pro代理端口规划了5个核心功能页面，
+                每个页面都有明确的业务定位和用户价值，确保用户体验的流畅性和功能的完整性。
+            </div>
+        </div>
+        
+        <div class="page-structure">
+            <!-- 智能看板页面 -->
+            <div class="page-card">
+                <div class="page-icon">📊</div>
+                <div class="page-title">智能看板</div>
+                <div class="page-description">
+                    首页数据总览，实时监控推广效果和业务指标
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item">核心数据指标展示</li>
+                    <li class="feature-item">实时动态流更新</li>
+                    <li class="feature-item">活动推广概览</li>
+                    <li class="feature-item">业绩趋势分析</li>
+                </ul>
+            </div>
+            
+            <!-- 代理管理页面 -->
+            <div class="page-card">
+                <div class="page-icon">👥</div>
+                <div class="page-title">代理管理</div>
+                <div class="page-description">
+                    校园代理的招募、审核、管理和绩效跟踪
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item">代理列表与筛选</li>
+                    <li class="feature-item">代理审核流程</li>
+                    <li class="feature-item">绩效数据统计</li>
+                    <li class="feature-item">代理等级管理</li>
+                </ul>
+            </div>
+            
+            <!-- 任务中心页面 -->
+            <div class="page-card">
+                <div class="page-icon">📋</div>
+                <div class="page-title">任务中心</div>
+                <div class="page-description">
+                    任务发布、分配、执行跟踪和结果验收
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item">任务创建与发布</li>
+                    <li class="feature-item">任务分配管理</li>
+                    <li class="feature-item">执行进度跟踪</li>
+                    <li class="feature-item">成果验收评估</li>
+                </ul>
+            </div>
+            
+            <!-- 线索管理页面 -->
+            <div class="page-card">
+                <div class="page-icon">🔍</div>
+                <div class="page-title">线索管理</div>
+                <div class="page-description">
+                    潜在客户线索的收集、跟进和转化管理
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item">线索收集与分类</li>
+                    <li class="feature-item">跟进状态管理</li>
+                    <li class="feature-item">转化率分析</li>
+                    <li class="feature-item">客户关系维护</li>
+                </ul>
+            </div>
+            
+            <!-- 个人中心页面 -->
+            <div class="page-card">
+                <div class="page-icon">👤</div>
+                <div class="page-title">个人中心</div>
+                <div class="page-description">
+                    个人信息管理、设置和业务数据统计
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item">个人信息维护</li>
+                    <li class="feature-item">业绩数据统计</li>
+                    <li class="feature-item">系统设置</li>
+                    <li class="feature-item">帮助与反馈</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="tabbar-preview">
+            <div class="tabbar-title">📱 微信小程序底部导航栏设计</div>
+            <div class="tabbar-container">
+                <div class="tabbar-item active">
+                    <div class="tabbar-icon">📊</div>
+                    <div class="tabbar-label">智能看板</div>
+                </div>
+                <div class="tabbar-item">
+                    <div class="tabbar-icon">👥</div>
+                    <div class="tabbar-label">代理管理</div>
+                </div>
+                <div class="tabbar-item">
+                    <div class="tabbar-icon">📋</div>
+                    <div class="tabbar-label">任务中心</div>
+                </div>
+                <div class="tabbar-item">
+                    <div class="tabbar-icon">🔍</div>
+                    <div class="tabbar-label">线索管理</div>
+                </div>
+                <div class="tabbar-item">
+                    <div class="tabbar-icon">👤</div>
+                    <div class="tabbar-label">个人中心</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mobile-preview">
+            <div class="mobile-screen">
+                <div class="mobile-header">校推宝Pro - 代理端</div>
+                <div class="mobile-content">
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">智能看板</div>
+                        <div style="font-size: 14px; color: #666;">实时监控推广效果和业务指标</div>
+                    </div>
+                </div>
+                <div class="mobile-tabbar">
+                    <div class="mobile-tab active">
+                        <div class="mobile-tab-icon">📊</div>
+                        <div>看板</div>
+                    </div>
+                    <div class="mobile-tab">
+                        <div class="mobile-tab-icon">👥</div>
+                        <div>代理</div>
+                    </div>
+                    <div class="mobile-tab">
+                        <div class="mobile-tab-icon">📋</div>
+                        <div>任务</div>
+                    </div>
+                    <div class="mobile-tab">
+                        <div class="mobile-tab-icon">🔍</div>
+                        <div>线索</div>
+                    </div>
+                    <div class="mobile-tab">
+                        <div class="mobile-tab-icon">👤</div>
+                        <div>我的</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="specification">
+            <div class="spec-title">⚙️ 技术规范与实现要求</div>
+            <div class="spec-item">
+                <span class="spec-label">页面数量：</span>
+                <span class="spec-value">5个核心页面（符合微信小程序tabbar最大限制）</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">导航方式：</span>
+                <span class="spec-value">底部标签导航 + 页面内导航</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">开发框架：</span>
+                <span class="spec-value">微信小程序原生开发</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">设计规范：</span>
+                <span class="spec-value">遵循微信小程序设计指南</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">适配要求：</span>
+                <span class="spec-value">支持iOS和Android系统</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 简单的交互效果
+        document.querySelectorAll('.tabbar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.tabbar-item').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        document.querySelectorAll('.mobile-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.mobile-tab').forEach(mobileTab => {
+                    mobileTab.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

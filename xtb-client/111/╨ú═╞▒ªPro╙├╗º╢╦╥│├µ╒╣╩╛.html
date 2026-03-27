@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro用户端页面展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .mobile-preview-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .mobile-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .mobile-preview {
+            background: #222;
+            border-radius: 40px;
+            padding: 20px;
+            width: 375px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .mobile-screen {
+            background: #fff;
+            border-radius: 30px;
+            height: 667px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mobile-header {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .mobile-navbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location-selector {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .mobile-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .message-icon {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .message-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f8f8;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            color: #999;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .category-item {
+            flex-shrink: 0;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .category-item.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .banner {
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .quick-entries {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .entry-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .entry-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .entry-text {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .activity-tag {
+            padding: 2px 8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .activity-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .activity-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .mobile-tabbar {
+            height: 80px;
+            background: white;
+            display: flex;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .mobile-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .mobile-tab.active {
+            color: #667eea;
+        }
+        
+        .mobile-tab-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .page-info {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .page-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-description {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .page-details {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .details-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .feature-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .feature-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>校推宝Pro用户端页面展示</h1>
+            <p>基于微信小程序底部导航栏设计的用户端完整页面展示</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">核心页面</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">底部标签</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">功能模块</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 活动广场页面 -->
+        <div class="mobile-preview-section">
+            <div class="section-title">📱 活动广场（首页）</div>
+            <div class="mobile-container">
+                <div class="mobile-preview">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="mobile-navbar">
+                                <div class="location-selector">
+                                    📍 北京大学
+                                </div>
+                            </div>
+                            <div class="mobile-title">活动广场</div>
+                            <div class="message-icon">
+                                💬
+                                <div class="message-badge">3</div>
+                            </div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="search-bar">
+                                <div class="search-icon">🔍</div>
+                                <input class="search-input" placeholder="搜索活动关键词">
+                            </div>
+                            <div class="categories">
+                                <div class="category-item active">全部活动</div>
+                                <div class="category-item">热门活动</div>
+                                <div class="category-item">最新活动</div>
+                                <div class="category-item">附近活动</div>
+                                <div class="category-item">免费活动</div>
+                            </div>
+                            <div class="banner">活动轮播图区域</div>
+                            <div class="quick-entries">
+                                <div class="entry-item">
+                                    <div class="entry-icon">📍</div>
+                                    <div class="entry-text">附近活动</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">📅</div>
+                                    <div class="entry-text">活动日历</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">🎁</div>
+                                    <div class="entry-text">奖励中心</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">📤</div>
+                                    <div class="entry-text">分享活动</div>
+                                </div>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">考研冲刺班体验课</div>
+                                        <div class="activity-tag">热门</div>
+                                    </div>
+                                    <div class="activity-desc">专业考研辅导，名师授课，免费体验机会</div>
+                                    <div class="activity-info">
+                                        <div>⏰ 今天 14:00</div>
+                                        <div>👥 128人参与</div>
+                                    </div>
+                                </div>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">英语四六级模拟考试</div>
+                                        <div class="activity-tag">免费</div>
+                                    </div>
+                                    <div class="activity-desc">全真模拟考试环境，专业评分系统</div>
+                                    <div class="activity-info">
+                                        <div>⏰ 明天 09:00</div>
+                                        <div>👥 256人参与</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-tabbar">
+                            <div class="mobile-tab active">
+                                <div class="mobile-tab-icon">🏠</div>
+                                <div>活动广场</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🎁</div>
+                                <div>奖励中心</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">📰</div>
+                                <div>校园资讯</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">👤</div>
+                                <div>个人中心</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-info">
+                        <div class="page-name">活动广场</div>
+                        <div class="page-description">首页活动浏览与参与平台</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 奖励中心页面 -->
+        <div class="mobile-preview-section">
+            <div class="section-title">🎁 奖励中心</div>
+            <div class="mobile-container">
+                <div class="mobile-preview">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="mobile-title">奖励中心</div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="banner" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                                我的积分：1280分
+                            </div>
+                            <div class="quick-entries">
+                                <div class="entry-item">
+                                    <div class="entry-icon">💰</div>
+                                    <div class="entry-text">积分明细</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">🛒</div>
+                                    <div class="entry-text">兑换商城</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">📋</div>
+                                    <div class="entry-text">兑换记录</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">📊</div>
+                                    <div class="entry-text">奖励统计</div>
+                                </div>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">今日奖励</div>
+                                    </div>
+                                    <div class="activity-desc">完成今日任务可获得额外积分奖励</div>
+                                    <div class="activity-info">
+                                        <div>🎯 3个任务待完成</div>
+                                        <div>💰 +50积分</div>
+                                    </div>
+                                </div>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">热门兑换</div>
+                                    </div>
+                                    <div class="activity-desc">星巴克咖啡券、电影票、学习用品等</div>
+                                    <div class="activity-info">
+                                        <div>🛒 12种商品</div>
+                                        <div>🔥 热门兑换</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-tabbar">
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🏠</div>
+                                <div>活动广场</div>
+                            </div>
+                            <div class="mobile-tab active">
+                                <div class="mobile-tab-icon">🎁</div>
+                                <div>奖励中心</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">📰</div>
+                                <div>校园资讯</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">👤</div>
+                                <div>个人中心</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-info">
+                        <div class="page-name">奖励中心</div>
+                        <div class="page-description">积分管理与奖励兑换平台</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 校园资讯页面 -->
+        <div class="mobile-preview-section">
+            <div class="section-title">📰 校园资讯</div>
+            <div class="mobile-container">
+                <div class="mobile-preview">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="mobile-title">校园资讯</div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="categories">
+                                <div class="category-item active">全部资讯</div>
+                                <div class="category-item">热门话题</div>
+                                <div class="category-item">专题活动</div>
+                                <div class="category-item">校园公告</div>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">新学期社团招新开始</div>
+                                        <div class="activity-tag">热门</div>
+                                    </div>
+                                    <div class="activity-desc">各大社团开始新学期招新，欢迎同学们踊跃报名参加</div>
+                                    <div class="activity-info">
+                                        <div>📅 2024-09-01</div>
+                                        <div>👁️ 256浏览</div>
+                                    </div>
+                                </div>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">图书馆开放时间调整</div>
+                                    </div>
+                                    <div class="activity-desc">因学期安排调整，图书馆开放时间有所变化</div>
+                                    <div class="activity-info">
+                                        <div>📅 2024-08-28</div>
+                                        <div>👁️ 128浏览</div>
+                                    </div>
+                                </div>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">校园艺术节即将开幕</div>
+                                        <div class="activity-tag">专题</div>
+                                    </div>
+                                    <div class="activity-desc">一年一度的校园艺术节将于下月举行，精彩节目不容错过</div>
+                                    <div class="activity-info">
+                                        <div>📅 2024-10-15</div>
+                                        <div>👁️ 512浏览</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-tabbar">
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🏠</div>
+                                <div>活动广场</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🎁</div>
+                                <div>奖励中心</div>
+                            </div>
+                            <div class="mobile-tab active">
+                                <div class="mobile-tab-icon">📰</div>
+                                <div>校园资讯</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">👤</div>
+                                <div>个人中心</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-info">
+                        <div class="page-name">校园资讯</div>
+                        <div class="page-description">校园动态与资讯获取平台</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 个人中心页面 -->
+        <div class="mobile-preview-section">
+            <div class="section-title">👤 个人中心</div>
+            <div class="mobile-container">
+                <div class="mobile-preview">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="mobile-title">个人中心</div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="banner" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 18px; font-weight: 600;">张同学</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">北京大学 • 计算机学院</div>
+                                </div>
+                            </div>
+                            <div class="quick-entries" style="grid-template-columns: repeat(3, 1fr);">
+                                <div class="entry-item">
+                                    <div class="entry-icon">📊</div>
+                                    <div class="entry-text">活动记录</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">❤️</div>
+                                    <div class="entry-text">收藏夹</div>
+                                </div>
+                                <div class="entry-item">
+                                    <div class="entry-icon">⚙️</div>
+                                    <div class="entry-text">设置</div>
+                                </div>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">我的数据统计</div>
+                                    </div>
+                                    <div class="activity-desc">
+                                        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                                            <div>参与活动：12个</div>
+                                            <div>获得积分：1280分</div>
+                                            <div>连续签到：7天</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">系统功能</div>
+                                    </div>
+                                    <div class="activity-desc">
+                                        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                                            <div>帮助中心</div>
+                                            <div>意见反馈</div>
+                                            <div>关于我们</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-tabbar">
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🏠</div>
+                                <div>活动广场</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">🎁</div>
+                                <div>奖励中心</div>
+                            </div>
+                            <div class="mobile-tab">
+                                <div class="mobile-tab-icon">📰</div>
+                                <div>校园资讯</div>
+                            </div>
+                            <div class="mobile-tab active">
+                                <div class="mobile-tab-icon">👤</div>
+                                <div>个人中心</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-info">
+                        <div class="page-name">个人中心</div>
+                        <div class="page-description">个人信息管理与系统设置</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页面功能详情 -->
+        <div class="page-details">
+            <div class="details-title">📋 用户端页面功能详情</div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-title">活动广场（首页）</div>
+                    <div class="feature-desc">
+                        • 活动浏览与搜索功能<br>
+                        • 活动分类筛选<br>
+                        • 轮播图展示<br>
+                        • 快捷入口导航<br>
+                        • 活动卡片展示与报名
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">奖励中心</div>
+                    <div class="feature-desc">
+                        • 积分管理与统计<br>
+                        • 奖励兑换商城<br>
+                        • 兑换记录查询<br>
+                        • 任务奖励系统<br>
+                        • 积分明细查看
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">校园资讯</div>
+                    <div class="feature-desc">
+                        • 校园动态资讯浏览<br>
+                        • 资讯分类筛选<br>
+                        • 热门话题推荐<br>
+                        • 专题活动展示<br>
+                        • 资讯详情查看
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">个人中心</div>
+                    <div class="feature-desc">
+                        • 个人信息管理<br>
+                        • 活动参与记录<br>
+                        • 收藏夹管理<br>
+                        • 系统设置<br>
+                        • 帮助与反馈
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">活动管理</div>
+                    <div class="feature-desc">
+                        • 活动详情页面<br>
+                        • 活动报名流程<br>
+                        • 我的活动列表<br>
+                        • 活动参与记录<br>
+                        • 活动收藏功能
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">消息中心</div>
+                    <div class="feature-desc">
+                        • 系统通知接收<br>
+                        • 活动提醒通知<br>
+                        • 奖励通知提醒<br>
+                        • 消息分类管理<br>
+                        • 消息状态标记
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 简单的交互效果
+        document.querySelectorAll('.mobile-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const parent = this.closest('.mobile-preview-section');
+                parent.querySelectorAll('.mobile-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const parent = this.closest('.mobile-content');
+                parent.querySelectorAll('.category-item').forEach(cat => {
+                    cat.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

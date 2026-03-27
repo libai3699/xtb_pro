@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro三端MVP数据看板</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --success-color: #06ffa5;
+            --warning-color: #ffbe0b;
+            --danger-color: #fb5607;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .kpi-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-change {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        .kpi-change.positive {
+            background-color: rgba(6, 255, 165, 0.2);
+            color: #06ffa5;
+        }
+
+        .kpi-change.negative {
+            background-color: rgba(251, 86, 7, 0.2);
+            color: #fb5607;
+        }
+
+        .platform-card {
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid;
+        }
+
+        .platform-card.institution {
+            border-left-color: var(--primary-color);
+        }
+
+        .platform-card.agent {
+            border-left-color: var(--accent-color);
+        }
+
+        .platform-card.user {
+            border-left-color: var(--success-color);
+        }
+
+        .platform-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .platform-feature {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .platform-feature li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .risk-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .risk-high {
+            color: var(--danger-color);
+        }
+
+        .risk-medium {
+            color: var(--warning-color);
+        }
+
+        .risk-low {
+            color: var(--success-color);
+        }
+
+        .permission-table {
+            font-size: 0.9rem;
+        }
+
+        .permission-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .permission-table td {
+            vertical-align: middle;
+        }
+
+        .permission-icon {
+            font-size: 1.2rem;
+        }
+
+        .has-permission {
+            color: var(--success-color);
+        }
+
+        .no-permission {
+            color: var(--danger-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .timeline-item.active::before {
+            background: var(--success-color);
+            box-shadow: 0 0 0 4px rgba(6, 255, 165, 0.2);
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .mvp-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+        }
+
+        @media (max-width: 768px) {
+            .kpi-value {
+                font-size: 1.8rem;
+            }
+            
+            .dashboard-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="dashboard-title">校推宝Pro三端MVP数据看板</h1>
+                    <p class="dashboard-subtitle">基于雷军战略视角的校园代理营销平台数据分析</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex align-items-center justify-content-md-end">
+                        <span class="me-3"><i class="bi bi-clock"></i> <span id="current-time"></span></span>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="roleDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> 管理员视图
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="roleDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="switchRole('admin')"><i class="bi bi-shield-check"></i> 管理员视图</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchRole('institution')"><i class="bi bi-building"></i> 机构视图</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchRole('agent')"><i class="bi bi-person"></i> 代理视图</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchRole('user')"><i class="bi bi-people"></i> 用户视图</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container my-4">
+        <!-- 核心KPI区 -->
+        <section class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">核心业务指标</h2>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card kpi-card">
+                    <div class="kpi-icon text-primary">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="kpi-value">42</div>
+                    <div class="kpi-label">月活跃机构数</div>
+                    <div class="kpi-change positive">+12%</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card kpi-card">
+                    <div class="kpi-icon text-danger">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="kpi-value">328</div>
+                    <div class="kpi-label">月活跃代理数</div>
+                    <div class="kpi-change positive">+18%</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card kpi-card">
+                    <div class="kpi-icon text-success">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="kpi-value">5,247</div>
+                    <div class="kpi-label">月活跃用户数</div>
+                    <div class="kpi-change positive">+25%</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card kpi-card">
+                    <div class="kpi-icon text-warning">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <div class="kpi-value">156</div>
+                    <div class="kpi-label">推广中活动数</div>
+                    <div class="kpi-change positive">+8%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 三端数据对比区 -->
+        <section class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">三端功能架构对比</h2>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card platform-card institution">
+                    <div class="platform-icon text-primary">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="platform-name">机构端</div>
+                    <p class="text-muted">教育机构管理平台</p>
+                    <ul class="platform-feature list-unstyled">
+                        <li><i class="bi bi-check-circle text-success"></i> 智能看板</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 代理管理</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 活动中心</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 线索管理</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 财务管理</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card platform-card agent">
+                    <div class="platform-icon text-danger">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="platform-name">校园代理端</div>
+                    <p class="text-muted">校园代理工作平台</p>
+                    <ul class="platform-feature list-unstyled">
+                        <li><i class="bi bi-check-circle text-success"></i> 任务大厅</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 个人中心</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 推广工具</li>
+                        <li><i class="bi bi-x-circle text-muted"></i> 团队管理 <span class="mvp-badge">P1</span></li>
+                        <li><i class="bi bi-x-circle text-muted"></i> 培训学院 <span class="mvp-badge">P2</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card platform-card user">
+                    <div class="platform-icon text-success">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="platform-name">用户/学生端</div>
+                    <p class="text-muted">学生用户参与平台</p>
+                    <ul class="platform-feature list-unstyled">
+                        <li><i class="bi bi-check-circle text-success"></i> 活动广场</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 活动落地页</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 参与流程</li>
+                        <li><i class="bi bi-check-circle text-success"></i> 个人中心</li>
+                        <li><i class="bi bi-x-circle text-muted"></i> 多级裂变 <span class="mvp-badge">P1</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 财务数据区和图表区 -->
+        <section class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">财务数据概览</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-currency-yen text-primary fs-4 me-2"></i>
+                                    <div>
+                                        <div class="fs-5 fw-bold">¥125,000</div>
+                                        <div class="text-muted small">总预算</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-cash-stack text-success fs-4 me-2"></i>
+                                    <div>
+                                        <div class="fs-5 fw-bold">¥62,500</div>
+                                        <div class="text-muted small">总佣金</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle text-info fs-4 me-2"></i>
+                                    <div>
+                                        <div class="fs-5 fw-bold">¥45,000</div>
+                                        <div class="text-muted small">已核对金额</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-clock-history text-warning fs-4 me-2"></i>
+                                    <div>
+                                        <div class="fs-5 fw-bold">¥17,500</div>
+                                        <div class="text-muted small">待核对金额</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info small">
+                            <i class="bi bi-info-circle"></i> P0版本财务数据仅用于各端口进行核对统计，不包含打款及提现相关功能
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">月度增长趋势</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实施进度区和风险评估区 -->
+        <section class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">实施路线图</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item active">
+                                <div class="timeline-date">第一阶段 (1-2个月)</div>
+                                <div class="timeline-content">
+                                    <h6>MVP核心功能开发</h6>
+                                    <ul class="small mb-0">
+                                        <li>机构端基础功能</li>
+                                        <li>代理端核心功能</li>
+                                        <li>用户端参与流程</li>
+                                        <li>基础数据埋点</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">第二阶段 (3-4个月)</div>
+                                <div class="timeline-content">
+                                    <h6>数据验证与优化</h6>
+                                    <ul class="small mb-0">
+                                        <li>基于数据反馈的功能优化</li>
+                                        <li>用户体验改进</li>
+                                        <li>性能优化</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">第三阶段 (5-6个月)</div>
+                                <div class="timeline-content">
+                                    <h6>功能扩展</h6>
+                                    <ul class="small mb-0">
+                                        <li>逐步引入P1优先级功能</li>
+                                        <li>优化算法和匹配逻辑</li>
+                                        <li>扩展商业模式</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">风险评估</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="risk-item">
+                            <div class="risk-icon risk-high">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">市场风险</h6>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-danger" style="width: 65%"></div>
+                                </div>
+                                <small class="text-muted">用户接受度低于预期</small>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon risk-medium">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">运营风险</h6>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: 45%"></div>
+                                </div>
+                                <small class="text-muted">代理活跃度不足</small>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon risk-low">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">技术风险</h6>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 25%"></div>
+                                </div>
+                                <small class="text-muted">功能复杂度超出预期</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据权限展示区 -->
+        <section class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">数据权限控制体系</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table permission-table">
+                                <thead>
+                                    <tr>
+                                        <th>角色</th>
+                                        <th>机构数据</th>
+                                        <th>代理数据</th>
+                                        <th>用户数据</th>
+                                        <th>财务数据</th>
+                                        <th>操作权限</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>机构管理员</strong></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td>完全控制</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>机构招生团队</strong></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-x-circle-fill permission-icon no-permission"></i></td>
+                                        <td>部分控制</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>校园代理</strong></td>
+                                        <td><i class="bi bi-x-circle-fill permission-icon no-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td>仅查看</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>用户</strong></td>
+                                        <td><i class="bi bi-x-circle-fill permission-icon no-permission"></i></td>
+                                        <td><i class="bi bi-x-circle-fill permission-icon no-permission"></i></td>
+                                        <td><i class="bi bi-check-circle-fill permission-icon has-permission"></i></td>
+                                        <td><i class="bi bi-x-circle-fill permission-icon no-permission"></i></td>
+                                        <td>仅查看</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-info small mt-3">
+                            <i class="bi bi-shield-check"></i> 基于角色的访问控制（RBAC）模型，确保数据隔离和安全性
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 雷军战略评估 -->
+        <section class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">雷军战略视角评估</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>综合评分</h6>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="rating-stars me-2">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                    </div>
+                                    <span class="fs-4 fw-bold">4.5/5</span>
+                                </div>
+                                <h6>优势总结</h6>
+                                <ul>
+                                    <li>战略定位准确，产品哲学贯彻到位</li>
+                                    <li>三端功能架构精简合理，符合MVP原则</li>
+                                    <li>技术架构成熟稳定，实施路线清晰</li>
+                                    <li>风险控制意识强，数据驱动思维明确</li>
+                                    <li>数据权限控制机制完善，保障平台安全</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>改进空间</h6>
+                                <ul>
+                                    <li>商业模式验证方案需要更具体化</li>
+                                    <li>用户获取和留存策略需要完善</li>
+                                    <li>竞争壁垒构建需要强化</li>
+                                    <li>运营支持体系需要优化</li>
+                                </ul>
+                                <div class="mt-3">
+                                    <h6>投资建议</h6>
+                                    <div class="alert alert-success">
+                                        <i class="bi bi-graph-up-arrow"></i> <strong>建议投资</strong>，但需要重点关注商业模式验证和用户获取策略的完善
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>校推宝Pro三端MVP优化架构设计</h5>
+                    <p>基于雷军战略视角的校园代理营销平台</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>文档版本：v1.0 | 创建时间：2025年10月3日</p>
+                    <p>创建者：雷军战略分析视角</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 更新当前时间
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // 切换角色视图
+        function switchRole(role) {
+            const roleNames = {
+                'admin': '管理员视图',
+                'institution': '机构视图',
+                'agent': '代理视图',
+                'user': '用户视图'
+            };
+            
+            document.getElementById('roleDropdown').innerHTML = `<i class="bi bi-person-circle"></i> ${roleNames[role]}`;
+            
+            // 这里可以根据不同角色显示不同的数据
+            // 实际应用中会根据角色权限过滤数据
+            console.log(`切换到${roleNames[role]}`);
+        }
+        
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            const growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [
+                        {
+                            label: '机构数',
+                            data: [12, 18, 25, 32, 38, 42],
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: '代理数',
+                            data: [45, 82, 135, 198, 265, 328],
+                            borderColor: '#f72585',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: '用户数',
+                            data: [520, 980, 1680, 2540, 3820, 5247],
+                            borderColor: '#06ffa5',
+                            backgroundColor: 'rgba(6, 255, 165, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

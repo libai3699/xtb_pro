@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 代理端我的评价</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .rating-summary {
+            padding: 20px;
+            background: white;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .overall-rating {
+            font-size: 48px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .stars {
+            margin-bottom: 12px;
+        }
+        .star {
+            color: #ffd700;
+            font-size: 20px;
+        }
+        .rating-count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .rating-distribution {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .rating-bar {
+            flex: 1;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .rating-fill {
+            height: 100%;
+            background: #ffd700;
+        }
+        .review-list {
+            padding: 0;
+        }
+        .review-item {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+        .reviewer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .review-date {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .review-content {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .review-activity {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .filter-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .filter-tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .filter-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">我的评价</h1>
+                <p class="page-subtitle">查看机构对您的评价反馈</p>
+            </div>
+            
+            <!-- 评价筛选 -->
+            <div class="filter-tabs">
+                <div class="filter-tab active">全部评价</div>
+                <div class="filter-tab">好评</div>
+                <div class="filter-tab">中评</div>
+                <div class="filter-tab">差评</div>
+            </div>
+            
+            <!-- 评分概览 -->
+            <div class="rating-summary">
+                <div class="overall-rating">4.8</div>
+                <div class="stars">
+                    <i class="fas fa-star star"></i>
+                    <i class="fas fa-star star"></i>
+                    <i class="fas fa-star star"></i>
+                    <i class="fas fa-star star"></i>
+                    <i class="fas fa-star-half-alt star"></i>
+                </div>
+                <div class="rating-count">基于 28 条评价</div>
+                
+                <!-- 评分分布 -->
+                <div style="margin-top: 20px;">
+                    <div class="rating-distribution">
+                        <span>5星</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 75%"></div>
+                        </div>
+                        <span>21</span>
+                    </div>
+                    <div class="rating-distribution">
+                        <span>4星</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 18%"></div>
+                        </div>
+                        <span>5</span>
+                    </div>
+                    <div class="rating-distribution">
+                        <span>3星</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 7%"></div>
+                        </div>
+                        <span>2</span>
+                    </div>
+                    <div class="rating-distribution">
+                        <span>2星</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 0%"></div>
+                        </div>
+                        <span>0</span>
+                    </div>
+                    <div class="rating-distribution">
+                        <span>1星</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 0%"></div>
+                        </div>
+                        <span>0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 评价列表 -->
+            <div class="review-list">
+                <!-- 评价1 -->
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <div class="reviewer-name">清华大学继续教育学院</div>
+                                <div class="review-date">2024-03-10</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                        </div>
+                    </div>
+                    <div class="review-activity">Python数据分析训练营推广</div>
+                    <div class="review-content">
+                        推广效果非常好，参与人数超出预期，代理工作认真负责，沟通及时，非常满意！
+                    </div>
+                </div>
+                
+                <!-- 评价2 -->
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <div class="reviewer-name">北京大学计算机学院</div>
+                                <div class="review-date">2024-03-05</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star-half-alt star"></i>
+                        </div>
+                    </div>
+                    <div class="review-activity">机器学习工作坊推广</div>
+                    <div class="review-content">
+                        推广工作做得不错，参与人数达到预期目标，代理态度积极，建议在后续推广中加强目标人群的精准定位。
+                    </div>
+                </div>
+                
+                <!-- 评价3 -->
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <div class="reviewer-name">复旦大学软件学院</div>
+                                <div class="review-date">2024-02-28</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                        </div>
+                    </div>
+                    <div class="review-activity">Web开发实战课程推广</div>
+                    <div class="review-content">
+                        非常优秀的代理！推广效果远超预期，参与人数达到45人，超出目标40人，工作态度认真负责，强烈推荐！
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-tasks text-xl mb-1"></i>
+                <span>任务</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span>推广</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

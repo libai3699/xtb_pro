@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端分享记录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .share-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .share-list {
+            padding: 20px;
+        }
+        .share-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .share-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            flex: 1;
+            margin-right: 12px;
+        }
+        .share-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .share-content {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .share-meta {
+            display: flex;
+            align-items: center;
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .share-meta span {
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .share-meta i {
+            margin-right: 4px;
+        }
+        .share-platforms {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .platform-tag {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .platform-tag i {
+            margin-right: 4px;
+        }
+        .share-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .share-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .empty-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">分享记录</h1>
+                <p class="page-subtitle">查看您的分享历史和效果</p>
+            </div>
+            
+            <!-- 分享统计 -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">总分享</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">成功</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">¥256</div>
+                    <div class="stat-label">收益</div>
+                </div>
+            </div>
+            
+            <!-- 分享分类标签 -->
+            <div class="share-tabs">
+                <div class="tab-button active">全部</div>
+                <div class="tab-button">活动</div>
+                <div class="tab-button">内容</div>
+                <div class="tab-button">收益</div>
+            </div>
+            
+            <!-- 分享记录列表 -->
+            <div class="share-list">
+                <!-- 分享记录项 -->
+                <div class="share-item">
+                    <div class="share-header">
+                        <div class="share-title">校园招聘宣讲会</div>
+                        <div class="share-status status-success">成功</div>
+                    </div>
+                    <div class="share-content">
+                        腾讯科技2024校园招聘火热进行中，快来加入我们！
+                    </div>
+                    <div class="share-platforms">
+                        <div class="platform-tag">
+                            <i class="fab fa-weixin"></i> 微信
+                        </div>
+                        <div class="platform-tag">
+                            <i class="fab fa-qq"></i> QQ
+                        </div>
+                    </div>
+                    <div class="share-meta">
+                        <span><i class="fas fa-eye"></i> 156次查看</span>
+                        <span><i class="fas fa-user-plus"></i> 23人参与</span>
+                        <span><i class="fas fa-coins"></i> ¥15.6</span>
+                    </div>
+                    <div class="share-footer">
+                        <div>2024-01-15 14:30</div>
+                        <div class="share-actions">
+                            <div class="action-btn">查看详情</div>
+                            <div class="action-btn primary">再次分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="share-item">
+                    <div class="share-header">
+                        <div class="share-title">编程技能培训营</div>
+                        <div class="share-status status-success">成功</div>
+                    </div>
+                    <div class="share-content">
+                        字节跳动前端开发实战训练营，零基础入门到精通
+                    </div>
+                    <div class="share-platforms">
+                        <div class="platform-tag">
+                            <i class="fab fa-weibo"></i> 微博
+                        </div>
+                        <div class="platform-tag">
+                            <i class="fas fa-link"></i> 链接
+                        </div>
+                    </div>
+                    <div class="share-meta">
+                        <span><i class="fas fa-eye"></i> 89次查看</span>
+                        <span><i class="fas fa-user-plus"></i> 12人参与</span>
+                        <span><i class="fas fa-coins"></i> ¥8.9</span>
+                    </div>
+                    <div class="share-footer">
+                        <div>2024-01-18 10:15</div>
+                        <div class="share-actions">
+                            <div class="action-btn">查看详情</div>
+                            <div class="action-btn primary">再次分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="share-item">
+                    <div class="share-header">
+                        <div class="share-title">产品经理分享会</div>
+                        <div class="share-status status-pending">进行中</div>
+                    </div>
+                    <div class="share-content">
+                        阿里巴巴资深产品经理分享行业经验，不容错过
+                    </div>
+                    <div class="share-platforms">
+                        <div class="platform-tag">
+                            <i class="fab fa-weixin"></i> 微信
+                        </div>
+                        <div class="platform-tag">
+                            <i class="fab fa-qq"></i> QQ
+                        </div>
+                        <div class="platform-tag">
+                            <i class="fab fa-weibo"></i> 微博
+                        </div>
+                    </div>
+                    <div class="share-meta">
+                        <span><i class="fas fa-eye"></i> 45次查看</span>
+                        <span><i class="fas fa-user-plus"></i> 8人参与</span>
+                        <span><i class="fas fa-coins"></i> ¥4.5</span>
+                    </div>
+                    <div class="share-footer">
+                        <div>2024-01-20 16:45</div>
+                        <div class="share-actions">
+                            <div class="action-btn">查看详情</div>
+                            <div class="action-btn primary">再次分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="share-item">
+                    <div class="share-header">
+                        <div class="share-title">团队协作训练营</div>
+                        <div class="share-status status-success">成功</div>
+                    </div>
+                    <div class="share-content">
+                        华为技术团队协作与沟通技巧培训，提升团队效率
+                    </div>
+                    <div class="share-platforms">
+                        <div class="platform-tag">
+                            <i class="fab fa-weixin"></i> 微信
+                        </div>
+                    </div>
+                    <div class="share-meta">
+                        <span><i class="fas fa-eye"></i> 67次查看</span>
+                        <span><i class="fas fa-user-plus"></i> 15人参与</span>
+                        <span><i class="fas fa-coins"></i> ¥6.7</span>
+                    </div>
+                    <div class="share-footer">
+                        <div>2024-01-22 09:30</div>
+                        <div class="share-actions">
+                            <div class="action-btn">查看详情</div>
+                            <div class="action-btn primary">再次分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="share-item">
+                    <div class="share-header">
+                        <div class="share-title">创新创业大赛</div>
+                        <div class="share-status status-failed">失败</div>
+                    </div>
+                    <div class="share-content">
+                        清华大学创新创业大赛报名启动，百万奖金等你来拿
+                    </div>
+                    <div class="share-platforms">
+                        <div class="platform-tag">
+                            <i class="fab fa-qq"></i> QQ
+                        </div>
+                    </div>
+                    <div class="share-meta">
+                        <span><i class="fas fa-eye"></i> 12次查看</span>
+                        <span><i class="fas fa-user-plus"></i> 0人参与</span>
+                        <span><i class="fas fa-coins"></i> ¥0</span>
+                    </div>
+                    <div class="share-footer">
+                        <div>2024-01-25 14:20</div>
+                        <div class="share-actions">
+                            <div class="action-btn">查看详情</div>
+                            <div class="action-btn primary">重新分享</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <!-- <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="empty-text">暂无分享记录</div>
+                <div class="empty-subtext">开始分享活动获得收益吧</div>
+            </div> -->
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

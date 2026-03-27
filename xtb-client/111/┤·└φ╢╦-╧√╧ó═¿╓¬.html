@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 代理端消息通知</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .notification-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .notification-list {
+            padding: 0;
+        }
+        .notification-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            background: white;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .notification-item.unread {
+            background: #f8fafc;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .icon-system {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .icon-task {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .icon-promotion {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .icon-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .notification-time {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        .notification-message {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            flex-shrink: 0;
+        }
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .action-btn {
+            padding: 4px 12px;
+            border: 1px solid #667eea;
+            border-radius: 4px;
+            color: #667eea;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .empty-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">消息通知</h1>
+                <p class="page-subtitle">及时了解活动动态和系统通知</p>
+            </div>
+            
+            <!-- 消息分类标签 -->
+            <div class="notification-tabs">
+                <div class="tab-button active">全部</div>
+                <div class="tab-button">系统</div>
+                <div class="tab-button">任务</div>
+                <div class="tab-button">推广</div>
+            </div>
+            
+            <!-- 消息列表 -->
+            <div class="notification-list">
+                <!-- 未读消息 -->
+                <div class="notification-item unread">
+                    <div class="notification-icon icon-task">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>新任务发布</span>
+                            <div class="unread-dot"></div>
+                        </div>
+                        <div class="notification-message">
+                            机构"清华大学"发布了新的推广任务"校园招聘宣讲会"，请及时查看并参与推广
+                        </div>
+                        <div class="notification-time">刚刚</div>
+                        <div class="notification-actions">
+                            <div class="action-btn primary">查看任务</div>
+                            <div class="action-btn">稍后处理</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notification-item unread">
+                    <div class="notification-icon icon-promotion">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>推广数据更新</span>
+                            <div class="unread-dot"></div>
+                        </div>
+                        <div class="notification-message">
+                            您的推广活动"暑期实习计划"今日新增参与人数15人，累计收益达到¥850
+                        </div>
+                        <div class="notification-time">5分钟前</div>
+                        <div class="notification-actions">
+                            <div class="action-btn primary">查看详情</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 已读消息 -->
+                <div class="notification-item">
+                    <div class="notification-icon icon-system">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>系统维护通知</span>
+                        </div>
+                        <div class="notification-message">
+                            系统将于今晚23:00-01:00进行维护升级，期间可能无法正常使用，请提前做好准备
+                        </div>
+                        <div class="notification-time">2小时前</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon icon-task">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>任务完成提醒</span>
+                        </div>
+                        <div class="notification-message">
+                            恭喜您完成推广任务"校园文化节"，获得奖励¥200，请继续努力
+                        </div>
+                        <div class="notification-time">昨天</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon icon-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>账户安全提醒</span>
+                        </div>
+                        <div class="notification-message">
+                            检测到您的账户在异地登录，如非本人操作请及时修改密码
+                        </div>
+                        <div class="notification-time">3天前</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon icon-promotion">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>推广奖励到账</span>
+                        </div>
+                        <div class="notification-message">
+                            您的推广奖励¥150已到账，请查收。感谢您的辛勤付出
+                        </div>
+                        <div class="notification-time">1周前</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <!-- <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="far fa-bell"></i>
+                </div>
+                <div class="empty-text">暂无消息</div>
+                <div class="empty-subtext">有新的消息时会在这里显示</div>
+            </div> -->
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-tasks text-xl mb-1"></i>
+                <span>任务</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span>推广</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -7,6 +7,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CampaignModule } from './modules/campaign/campaign.module';
+import { ContentModule } from './modules/content/content.module';
+import { GrowthModule } from './modules/growth/growth.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { LeadModule } from './modules/lead/lead.module';
 import { OrderModule } from './modules/order/order.module';
@@ -25,6 +27,8 @@ import { UserModule } from './modules/user/user.module';
     PrismaModule,
     AuthModule,
     CampaignModule,
+    ContentModule,
+    GrowthModule,
     AgentModule,
     LeadModule,
     OrderModule,

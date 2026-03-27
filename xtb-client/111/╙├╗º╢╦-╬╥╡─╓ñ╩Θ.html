@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端我的证书</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .certificate-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .certificate-list {
+            padding: 0;
+        }
+        .certificate-item {
+            padding: 20px;
+            border-bottom: 1px solid #f3f4f6;
+            background: white;
+        }
+        .certificate-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        .certificate-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .certificate-org {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        .certificate-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .certificate-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .cert-action-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .empty-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+        .certificate-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+            margin-bottom: 8px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">我的证书</h1>
+                <p class="page-subtitle">查看您获得的所有证书和成就</p>
+            </div>
+            
+            <!-- 证书统计 -->
+            <div class="certificate-stats">
+                <div class="stat-item">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">总证书数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">本月获得</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label">完成率</div>
+                </div>
+            </div>
+            
+            <!-- 证书分类标签 -->
+            <div class="certificate-tabs">
+                <div class="tab-button active">全部</div>
+                <div class="tab-button">技能认证</div>
+                <div class="tab-button">活动参与</div>
+                <div class="tab-button">优秀表现</div>
+            </div>
+            
+            <!-- 证书列表 -->
+            <div class="certificate-list">
+                <!-- 技能认证证书 -->
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">编程技能认证</div>
+                        <div class="certificate-org">字节跳动技术认证中心</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2024.03.15</span>
+                            <span>证书编号: TC20240315001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">产品经理认证</div>
+                        <div class="certificate-org">阿里巴巴产品学院</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2024.02.28</span>
+                            <span>证书编号: PM20240228001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 活动参与证书 -->
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">校园招聘优秀参与者</div>
+                        <div class="certificate-org">腾讯科技人力资源部</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2024.03.10</span>
+                            <span>证书编号: HR20240310001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">团队协作训练营结业</div>
+                        <div class="certificate-org">华为技术培训中心</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2024.02.25</span>
+                            <span>证书编号: TR20240225001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 优秀表现证书 -->
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">创新创业大赛一等奖</div>
+                        <div class="certificate-org">清华大学创新创业中心</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2024.01.20</span>
+                            <span>证书编号: IN20240120001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="certificate-item">
+                    <div class="certificate-card">
+                        <div class="certificate-title">优秀志愿者证书</div>
+                        <div class="certificate-org">北京大学志愿者协会</div>
+                        <div class="certificate-info">
+                            <span>颁发日期: 2023.12.15</span>
+                            <span>证书编号: V20231215001</span>
+                        </div>
+                        <div class="certificate-actions">
+                            <div class="cert-action-btn">查看详情</div>
+                            <div class="cert-action-btn">下载证书</div>
+                            <div class="cert-action-btn">分享</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <!-- <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="empty-text">暂无证书</div>
+                <div class="empty-subtext">参与活动并完成要求后获得证书</div>
+            </div> -->
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

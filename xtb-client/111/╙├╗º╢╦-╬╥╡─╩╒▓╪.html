@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端我的收藏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .collection-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 20px;
+        }
+        .collection-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .collection-cover {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            position: relative;
+        }
+        .collection-fav {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .collection-info {
+            padding: 12px;
+        }
+        .collection-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+        .collection-org {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .collection-time {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .empty-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">我的收藏</h1>
+                <p class="page-subtitle">查看您收藏的活动和内容</p>
+            </div>
+            
+            <!-- 收藏分类标签 -->
+            <div class="collection-tabs">
+                <div class="tab-button active">活动</div>
+                <div class="tab-button">机构</div>
+                <div class="tab-button">内容</div>
+            </div>
+            
+            <!-- 收藏列表 -->
+            <div class="collection-grid">
+                <!-- 收藏的活动 -->
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-graduation-cap"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">校园招聘宣讲会</div>
+                        <div class="collection-org">腾讯科技</div>
+                        <div class="collection-time">收藏于 3天前</div>
+                    </div>
+                </div>
+                
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-laptop-code"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">编程技能培训</div>
+                        <div class="collection-org">字节跳动</div>
+                        <div class="collection-time">收藏于 1周前</div>
+                    </div>
+                </div>
+                
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-chart-line"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">产品经理分享会</div>
+                        <div class="collection-org">阿里巴巴</div>
+                        <div class="collection-time">收藏于 2周前</div>
+                    </div>
+                </div>
+                
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-users"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">团队协作训练营</div>
+                        <div class="collection-org">华为技术</div>
+                        <div class="collection-time">收藏于 3周前</div>
+                    </div>
+                </div>
+                
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-bullhorn"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">创新创业大赛</div>
+                        <div class="collection-org">清华大学</div>
+                        <div class="collection-time">收藏于 1月前</div>
+                    </div>
+                </div>
+                
+                <div class="collection-item">
+                    <div class="collection-cover">
+                        <i class="fas fa-microphone"></i>
+                        <div class="collection-fav">
+                            <i class="fas fa-heart" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <div class="collection-info">
+                        <div class="collection-title">公开演讲培训</div>
+                        <div class="collection-org">北京大学</div>
+                        <div class="collection-time">收藏于 1月前</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <!-- <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="empty-text">暂无收藏</div>
+                <div class="empty-subtext">发现感兴趣的内容后可以收藏起来</div>
+            </div> -->
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

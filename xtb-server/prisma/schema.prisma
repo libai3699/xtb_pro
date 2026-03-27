@@ -23,26 +23,34 @@ model AdminUser {
 }
 
 model AppUser {
-  id            BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
-  role          String         @db.VarChar(20)
-  account       String?        @unique(map: "uk_app_user_account") @db.VarChar(50)
-  password      String?        @db.VarChar(255)
-  nickname      String?        @db.VarChar(50)
-  avatar        String?        @db.VarChar(255)
-  mobile        String?        @db.VarChar(20)
-  openid        String?        @db.VarChar(100)
-  unionid       String?        @db.VarChar(100)
-  status        Int            @default(1) @db.TinyInt
-  createdAt     DateTime       @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
-  agentProfile  AgentProfile?
-  agentLeads    Lead[]         @relation("LeadAgentUser")
-  studentLeads  Lead[]         @relation("LeadStudentUser")
-  agentOrders   Order[]        @relation("OrderAgentUser")
-  studentOrders Order[]        @relation("OrderStudentUser")
-  shares        CampaignShare[]
-  agentStats    StatsDaily[]   @relation("StatsAgentUser")
-  loginLogs     LoginLog[]     @relation("AppUserLoginLogs")
+  id                 BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  role               String              @db.VarChar(20)
+  account            String?             @unique(map: "uk_app_user_account") @db.VarChar(50)
+  password           String?             @db.VarChar(255)
+  nickname           String?             @db.VarChar(50)
+  avatar             String?             @db.VarChar(255)
+  mobile             String?             @db.VarChar(20)
+  openid             String?             @db.VarChar(100)
+  unionid            String?             @db.VarChar(100)
+  status             Int                 @default(1) @db.TinyInt
+  createdAt          DateTime            @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt          DateTime            @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  agentProfile       AgentProfile?
+  agentLeads         Lead[]              @relation("LeadAgentUser")
+  studentLeads       Lead[]              @relation("LeadStudentUser")
+  agentOrders        Order[]             @relation("OrderAgentUser")
+  studentOrders      Order[]             @relation("OrderStudentUser")
+  shares             CampaignShare[]
+  agentStats         StatsDaily[]        @relation("StatsAgentUser")
+  loginLogs          LoginLog[]          @relation("AppUserLoginLogs")
+  pointRecords       PointRecord[]
+  rewardRedeemOrders RewardRedeemOrder[]
+  messages           UserMessage[]
+  favorites          UserFavorite[]
+  certificates       UserCertificate[]
+  learningRecords    LearningRecord[]
+  feedbacks          UserFeedback[]
+  agentReviews       AgentReview[]       @relation("AgentReviewUser")
 
   @@index([role], map: "idx_app_user_role")
   @@index([mobile], map: "idx_app_user_mobile")
@@ -133,18 +141,20 @@ model Lead {
 }
 
 model Product {
-  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  campaignId    BigInt   @map("campaign_id") @db.UnsignedBigInt
-  title         String   @db.VarChar(100)
-  price         Decimal  @default(0.00) @db.Decimal(10, 2)
-  originalPrice Decimal? @map("original_price") @db.Decimal(10, 2)
-  cover         String?  @db.VarChar(255)
-  description   String?  @db.Text
-  status        Int      @default(1) @db.TinyInt
-  createdAt     DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
-  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  orders        Order[]
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  campaignId      BigInt           @map("campaign_id") @db.UnsignedBigInt
+  title           String           @db.VarChar(100)
+  price           Decimal          @default(0.00) @db.Decimal(10, 2)
+  originalPrice   Decimal?         @map("original_price") @db.Decimal(10, 2)
+  cover           String?          @db.VarChar(255)
+  description     String?          @db.Text
+  status          Int              @default(1) @db.TinyInt
+  createdAt       DateTime         @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  campaign        Campaign         @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  orders          Order[]
+  learningRecords LearningRecord[]
+  certificates    UserCertificate[]
 
   @@index([campaignId], map: "idx_product_campaign")
   @@index([status], map: "idx_product_status")
@@ -241,4 +251,169 @@ model LoginLog {
   @@index([appUserId], map: "idx_login_log_app_user")
   @@index([loginAt], map: "idx_login_log_login_at")
   @@map("login_log")
+}
+
+model ContentArticle {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  type        String   @db.VarChar(20)
+  title       String   @db.VarChar(120)
+  summary     String?  @db.VarChar(255)
+  cover       String?  @db.VarChar(255)
+  category    String?  @db.VarChar(50)
+  content     String?  @db.Text
+  sort        Int      @default(0)
+  status      Int      @default(1) @db.TinyInt
+  publishedAt DateTime? @map("published_at") @db.DateTime(0)
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+
+  @@index([type, status], map: "idx_content_article_type_status")
+  @@map("content_article")
+}
+
+model UserMessage {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId    BigInt   @map("user_id") @db.UnsignedBigInt
+  type      String   @default("system") @db.VarChar(20)
+  title     String   @db.VarChar(120)
+  content   String   @db.VarChar(500)
+  bizType   String?  @map("biz_type") @db.VarChar(30)
+  bizId     BigInt?  @map("biz_id") @db.UnsignedBigInt
+  isRead    Int      @default(0) @map("is_read") @db.TinyInt
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user      AppUser  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, isRead], map: "idx_user_message_user_read")
+  @@map("user_message")
+}
+
+model RewardGoods {
+  id          BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  title       String              @db.VarChar(120)
+  cover       String?             @db.VarChar(255)
+  points      Int                 @default(0)
+  stock       Int                 @default(0)
+  description String?             @db.Text
+  sort        Int                 @default(0)
+  status      Int                 @default(1) @db.TinyInt
+  createdAt   DateTime            @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime            @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  redeemOrders RewardRedeemOrder[]
+
+  @@index([status, sort], map: "idx_reward_goods_status_sort")
+  @@map("reward_goods")
+}
+
+model RewardRedeemOrder {
+  id        BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  orderNo   String      @unique(map: "uk_reward_redeem_order_no") @map("order_no") @db.VarChar(50)
+  userId    BigInt      @map("user_id") @db.UnsignedBigInt
+  goodsId   BigInt      @map("goods_id") @db.UnsignedBigInt
+  points    Int         @default(0)
+  status    Int         @default(0) @db.TinyInt
+  createdAt DateTime    @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user      AppUser     @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  goods     RewardGoods @relation(fields: [goodsId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId], map: "idx_reward_redeem_order_user")
+  @@index([goodsId], map: "idx_reward_redeem_order_goods")
+  @@map("reward_redeem_order")
+}
+
+model PointRecord {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId       BigInt   @map("user_id") @db.UnsignedBigInt
+  type         String   @db.VarChar(20)
+  changeValue  Int      @map("change_value")
+  balanceValue Int      @default(0) @map("balance_value")
+  remark       String?  @db.VarChar(255)
+  bizType      String?  @map("biz_type") @db.VarChar(30)
+  bizId        BigInt?  @map("biz_id") @db.UnsignedBigInt
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  user         AppUser  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, createdAt], map: "idx_point_record_user_created")
+  @@map("point_record")
+}
+
+model UserFavorite {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId      BigInt   @map("user_id") @db.UnsignedBigInt
+  targetType  String   @map("target_type") @db.VarChar(20)
+  targetId    BigInt   @map("target_id") @db.UnsignedBigInt
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  user        AppUser  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([userId, targetType, targetId], map: "uk_user_favorite")
+  @@index([userId, createdAt], map: "idx_user_favorite_user_created")
+  @@map("user_favorite")
+}
+
+model UserCertificate {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId      BigInt    @map("user_id") @db.UnsignedBigInt
+  productId   BigInt?   @map("product_id") @db.UnsignedBigInt
+  title       String    @db.VarChar(120)
+  issuer      String?   @db.VarChar(120)
+  cover       String?   @db.VarChar(255)
+  fileUrl     String?   @map("file_url") @db.VarChar(255)
+  issuedAt    DateTime? @map("issued_at") @db.DateTime(0)
+  status      Int       @default(1) @db.TinyInt
+  createdAt   DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user        AppUser   @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, status], map: "idx_user_certificate_user_status")
+  @@map("user_certificate")
+}
+
+model LearningRecord {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId          BigInt    @map("user_id") @db.UnsignedBigInt
+  productId       BigInt?   @map("product_id") @db.UnsignedBigInt
+  title           String    @db.VarChar(120)
+  cover           String?   @db.VarChar(255)
+  progress        Int       @default(0)
+  durationMinutes Int       @default(0) @map("duration_minutes")
+  lastStudyAt     DateTime? @map("last_study_at") @db.DateTime(0)
+  status          Int       @default(1) @db.TinyInt
+  createdAt       DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user            AppUser   @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product         Product?  @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, status], map: "idx_learning_record_user_status")
+  @@map("learning_record")
+}
+
+model UserFeedback {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt?  @map("user_id") @db.UnsignedBigInt
+  type       String   @default("suggestion") @db.VarChar(20)
+  content    String   @db.VarChar(1000)
+  contact    String?  @db.VarChar(100)
+  status     Int      @default(0) @db.TinyInt
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  user       AppUser? @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([status, createdAt], map: "idx_user_feedback_status_created")
+  @@map("user_feedback")
+}
+
+model AgentReview {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  agentUserId BigInt   @map("agent_user_id") @db.UnsignedBigInt
+  score       Int      @default(5) @db.TinyInt
+  content     String?  @db.VarChar(255)
+  status      Int      @default(1) @db.TinyInt
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+  agentUser   AppUser  @relation("AgentReviewUser", fields: [agentUserId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([agentUserId, status], map: "idx_agent_review_user_status")
+  @@map("agent_review")
 }

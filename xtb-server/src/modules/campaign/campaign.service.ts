@@ -3,6 +3,8 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { serializeValue } from '../../common/utils/serialize.util';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { CreateShareDto } from './dto/create-share.dto';
+import { VisitShareDto } from './dto/visit-share.dto';
 
 @Injectable()
 export class CampaignService {
@@ -110,5 +112,96 @@ export class CampaignService {
       message: 'ok',
       data: serializeValue(campaign),
     };
+  }
+
+  async createShare(dto: CreateShareDto) {
+    const record = await this.ensureCampaignShareRecord(BigInt(dto.campaignId), BigInt(dto.agentUserId), dto.shareUrl?.trim());
+
+    return {
+      code: 0,
+      message: 'ok',
+      data: serializeValue(record),
+    };
+  }
+
+  async visitShare(dto: VisitShareDto) {
+    const record = await this.ensureCampaignShareRecord(BigInt(dto.campaignId), BigInt(dto.agentUserId));
+    const updated = await this.prisma.campaignShare.update({
+      where: {
+        id: record.id,
+      },
+      data: {
+        pv: {
+          increment: 1,
+        },
+        uv: {
+          increment: 1,
+        },
+      },
+    });
+
+    return {
+      code: 0,
+      message: 'ok',
+      data: serializeValue(updated),
+    };
+  }
+
+  async getShareList(userId: number) {
+    const list = await this.prisma.campaignShare.findMany({
+      where: {
+        agentUserId: BigInt(userId),
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      include: {
+        campaign: {
+          select: {
+            id: true,
+            title: true,
+            cover: true,
+            rewardDesc: true,
+          },
+        },
+      },
+    });
+
+    return {
+      code: 0,
+      message: 'ok',
+      data: serializeValue(list),
+    };
+  }
+
+  async ensureCampaignShareRecord(campaignId: bigint, agentUserId: bigint, shareUrl?: string) {
+    const current = await this.prisma.campaignShare.findFirst({
+      where: {
+        campaignId,
+        agentUserId,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    if (current) {
+      if (shareUrl && current.shareUrl !== shareUrl) {
+        return this.prisma.campaignShare.update({
+          where: { id: current.id },
+          data: { shareUrl },
+        });
+      }
+      return current;
+    }
+
+    return this.prisma.campaignShare.create({
+      data: {
+        campaignId,
+        agentUserId,
+        shareCode: `S${Date.now()}${Math.random().toString().slice(2, 8)}`,
+        shareUrl,
+      },
+    });
   }
 }

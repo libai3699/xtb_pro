@@ -10,6 +10,7 @@ interface StoredUser {
   account?: string;
   nickname: string;
   mobile?: string;
+  avatar?: string;
 }
 
 const storageUser = getUserStorage<StoredUser>();
@@ -22,19 +23,21 @@ export const useUserStore = defineStore('user', {
     account: storageUser?.account || '',
     nickname: storageUser?.nickname || '',
     mobile: storageUser?.mobile || '',
+    avatar: storageUser?.avatar || '',
   }),
   actions: {
     setRole(role: UserRole) {
       this.role = role;
       this.persist();
     },
-    setUser(payload: { id: string; role: UserRole; token: string; account?: string; nickname?: string; mobile?: string }) {
+    setUser(payload: { id: string; role: UserRole; token: string; account?: string; nickname?: string; mobile?: string; avatar?: string }) {
       this.id = payload.id;
       this.role = payload.role;
       this.token = payload.token;
       this.account = payload.account || '';
       this.nickname = payload.nickname || '';
       this.mobile = payload.mobile || '';
+      this.avatar = payload.avatar || '';
       this.persist();
     },
     logout() {
@@ -44,6 +47,7 @@ export const useUserStore = defineStore('user', {
       this.account = '';
       this.nickname = '';
       this.mobile = '';
+      this.avatar = '';
       clearUserStorage();
     },
     persist() {
@@ -54,6 +58,7 @@ export const useUserStore = defineStore('user', {
         account: this.account,
         nickname: this.nickname,
         mobile: this.mobile,
+        avatar: this.avatar,
       });
     },
   },

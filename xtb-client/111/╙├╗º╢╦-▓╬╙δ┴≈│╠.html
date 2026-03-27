@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 参与流程</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            padding: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .progress-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .progress-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .progress-subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .progress-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6b7280;
+            flex-shrink: 0;
+        }
+        .step-number.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .step-number.completed {
+            background: #10b981;
+            color: white;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .step-description {
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .step-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .step-btn {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            color: #4b5563;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .step-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .step-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-current {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .form-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .checkbox-group input {
+            width: 16px;
+            height: 16px;
+        }
+        .checkbox-group label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #6b7280;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .upload-area:hover {
+            border-color: #667eea;
+        }
+        .upload-area i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #9ca3af;
+        }
+        .completion-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .completion-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+        }
+        .completion-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .completion-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+        .reward-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 进度头部 -->
+            <div class="progress-header">
+                <div class="progress-title">参与流程</div>
+                <div class="progress-subtitle">暑期英语培训课程</div>
+            </div>
+            
+            <!-- 进度步骤 -->
+            <div class="progress-steps">
+                <!-- 步骤1：基本信息填写 -->
+                <div class="step-item">
+                    <div class="step-number completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            基本信息填写
+                            <span class="step-status status-completed">已完成</span>
+                        </div>
+                        <div class="step-description">
+                            填写个人基本信息，包括姓名、联系方式、学校等
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 步骤2：学习计划确认 -->
+                <div class="step-item">
+                    <div class="step-number active">2</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            学习计划确认
+                            <span class="step-status status-current">进行中</span>
+                        </div>
+                        <div class="step-description">
+                            确认学习时间安排和课程选择
+                        </div>
+                        
+                        <!-- 表单区域 -->
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label class="form-label">选择学习时间段</label>
+                                <select class="form-input">
+                                    <option>上午 9:00-12:00</option>
+                                    <option>下午 14:00-17:00</option>
+                                    <option>晚上 19:00-22:00</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">课程级别选择</label>
+                                <select class="form-input">
+                                    <option>基础班（适合CET-4水平）</option>
+                                    <option>提高班（适合CET-6水平）</option>
+                                    <option>进阶班（适合专业英语）</option>
+                                </select>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="agree-plan">
+                                <label for="agree-plan">我已阅读并同意学习计划安排</label>
+                            </div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button class="step-btn">上一步</button>
+                            <button class="step-btn primary">确认并继续</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 步骤3：资料上传 -->
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            资料上传
+                            <span class="step-status status-pending">待完成</span>
+                        </div>
+                        <div class="step-description">
+                            上传学生证照片和相关证明材料
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 步骤4：支付确认 -->
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            支付确认
+                            <span class="step-status status-pending">待完成</span>
+                        </div>
+                        <div class="step-description">
+                            确认支付信息并完成报名
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 步骤5：参与成功 -->
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            参与成功
+                            <span class="step-status status-pending">待完成</span>
+                        </div>
+                        <div class="step-description">
+                            完成所有步骤，开始学习之旅
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 完成状态展示 -->
+            <div class="completion-section" style="display: none;">
+                <div class="completion-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="completion-title">参与成功！</div>
+                <div class="completion-description">
+                    恭喜您成功报名暑期英语培训课程
+                </div>
+                <div class="reward-badge">奖励 ¥50</div>
+                <button class="step-btn primary" style="width: 200px;">开始学习</button>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

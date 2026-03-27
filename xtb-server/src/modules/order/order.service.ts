@@ -54,21 +54,57 @@ export class OrderService {
       throw new NotFoundException('商品不存在');
     }
 
-    const order = await this.prisma.order.create({
-      data: {
-        orderNo: `XTB${Date.now()}`,
-        productId: product.id,
-        campaignId: dto.campaignId ? BigInt(dto.campaignId) : product.campaignId,
-        agentUserId: dto.agentUserId ? BigInt(dto.agentUserId) : undefined,
-        studentUserId: dto.studentUserId ? BigInt(dto.studentUserId) : undefined,
-        studentName: dto.studentName,
-        mobile: dto.mobile,
-        amount: product.price,
-        status: 0,
-      },
-      include: {
-        product: true,
-      },
+    const campaignId = dto.campaignId ? BigInt(dto.campaignId) : product.campaignId;
+    const agentUserId = dto.agentUserId ? BigInt(dto.agentUserId) : undefined;
+
+    const order = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.order.create({
+        data: {
+          orderNo: `XTB${Date.now()}`,
+          productId: product.id,
+          campaignId,
+          agentUserId,
+          studentUserId: dto.studentUserId ? BigInt(dto.studentUserId) : undefined,
+          studentName: dto.studentName,
+          mobile: dto.mobile,
+          amount: product.price,
+          status: 0,
+        },
+        include: {
+          product: true,
+        },
+      });
+
+      if (agentUserId) {
+        const share = await tx.campaignShare.findFirst({
+          where: {
+            campaignId,
+            agentUserId,
+          },
+        });
+
+        if (share) {
+          await tx.campaignShare.update({
+            where: { id: share.id },
+            data: {
+              orderCount: {
+                increment: 1,
+              },
+            },
+          });
+        } else {
+          await tx.campaignShare.create({
+            data: {
+              campaignId,
+              agentUserId,
+              shareCode: `S${Date.now()}${Math.random().toString().slice(2, 8)}`,
+              orderCount: 1,
+            },
+          });
+        }
+      }
+
+      return created;
     });
 
     return {

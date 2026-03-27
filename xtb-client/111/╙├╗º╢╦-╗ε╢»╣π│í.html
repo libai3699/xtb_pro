@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端活动广场</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            padding: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .search-bar {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 10px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .search-bar i {
+            color: #9ca3af;
+            margin-right: 8px;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+        }
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+        }
+        .category-tab {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .category-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .activity-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .activity-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .activity-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .activity-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+        .info-item i {
+            margin-right: 4px;
+            color: #667eea;
+        }
+        .activity-reward {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .activity-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+        .participants {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+        .participants i {
+            margin-right: 4px;
+        }
+        .join-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .banner-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .banner-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">活动广场</h1>
+                <div class="text-sm text-gray-500">发现精彩活动</div>
+            </div>
+            
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索活动...">
+            </div>
+            
+            <!-- 活动分类 -->
+            <div class="category-tabs">
+                <div class="category-tab active">全部</div>
+                <div class="category-tab">教育培训</div>
+                <div class="category-tab">实习就业</div>
+                <div class="category-tab">校园活动</div>
+                <div class="category-tab">技能提升</div>
+                <div class="category-tab">竞赛比赛</div>
+            </div>
+            
+            <!-- 活动列表 -->
+            <div class="activity-list">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <i class="fas fa-graduation-cap text-3xl"></i>
+                    </div>
+                    <div class="activity-title">暑期英语培训课程</div>
+                    <div class="activity-info">
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span>新东方教育</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>7月1日-8月31日</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>线上+线下</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>2个月</span>
+                        </div>
+                    </div>
+                    <div class="activity-reward">奖励 ¥50</div>
+                    <div class="activity-actions">
+                        <div class="participants">
+                            <i class="fas fa-users"></i>
+                            <span>156人已参与</span>
+                        </div>
+                        <button class="join-btn">立即参与</button>
+                    </div>
+                </div>
+                
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <i class="fas fa-calculator text-3xl"></i>
+                    </div>
+                    <div class="activity-title">考研数学辅导班</div>
+                    <div class="activity-info">
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span>中公教育</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>6月15日-12月15日</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>线上直播</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>6个月</span>
+                        </div>
+                    </div>
+                    <div class="activity-reward">奖励 ¥60</div>
+                    <div class="activity-actions">
+                        <div class="participants">
+                            <i class="fas fa-users"></i>
+                            <span>89人已参与</span>
+                        </div>
+                        <button class="join-btn">立即参与</button>
+                    </div>
+                </div>
+                
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <i class="fas fa-language text-3xl"></i>
+                    </div>
+                    <div class="activity-title">雅思冲刺训练营</div>
+                    <div class="activity-info">
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span>环球雅思</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>5月1日-6月30日</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>线下集训</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>2个月</span>
+                        </div>
+                    </div>
+                    <div class="activity-reward">奖励 ¥80</div>
+                    <div class="activity-actions">
+                        <div class="participants">
+                            <i class="fas fa-users"></i>
+                            <span>234人已参与</span>
+                        </div>
+                        <button class="join-btn">立即参与</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item active">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

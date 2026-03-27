@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校推宝Pro - 用户端学习记录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f6f6;
+            overflow: hidden;
+        }
+        .container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            border: 12px solid #000;
+            border-radius: 40px;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+        .content {
+            height: calc(100% - 44px - 60px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-bar {
+            background: white;
+            height: 60px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            opacity: 1;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+        .tab-item.active {
+            color: #764ba2;
+        }
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .learning-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .learning-list {
+            padding: 20px;
+        }
+        .learning-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        .learning-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .learning-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            flex: 1;
+            margin-right: 12px;
+        }
+        .learning-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-not-started {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .learning-meta {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .learning-meta span {
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .learning-meta i {
+            margin-right: 4px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+        }
+        .learning-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .learning-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .empty-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mockup"></div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="header">
+                <h1 class="page-title">学习记录</h1>
+                <p class="page-subtitle">查看您的学习进度和成就</p>
+            </div>
+            
+            <!-- 学习统计 -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">36h</div>
+                    <div class="stat-label">总时长</div>
+                </div>
+            </div>
+            
+            <!-- 学习分类标签 -->
+            <div class="learning-tabs">
+                <div class="tab-button active">全部</div>
+                <div class="tab-button">进行中</div>
+                <div class="tab-button">已完成</div>
+                <div class="tab-button">收藏</div>
+            </div>
+            
+            <!-- 学习记录列表 -->
+            <div class="learning-list">
+                <!-- 学习记录项 -->
+                <div class="learning-item">
+                    <div class="learning-header">
+                        <div class="learning-title">产品经理入门课程</div>
+                        <div class="learning-status status-completed">已完成</div>
+                    </div>
+                    <div class="learning-meta">
+                        <span><i class="fas fa-clock"></i> 8小时</span>
+                        <span><i class="fas fa-star"></i> 4.8</span>
+                        <span><i class="fas fa-calendar"></i> 2024-01-15</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="learning-footer">
+                        <div>腾讯科技</div>
+                        <div class="learning-actions">
+                            <div class="action-btn">查看证书</div>
+                            <div class="action-btn primary">复习</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item">
+                    <div class="learning-header">
+                        <div class="learning-title">前端开发实战训练营</div>
+                        <div class="learning-status status-in-progress">进行中</div>
+                    </div>
+                    <div class="learning-meta">
+                        <span><i class="fas fa-clock"></i> 12小时</span>
+                        <span><i class="fas fa-star"></i> 4.9</span>
+                        <span><i class="fas fa-calendar"></i> 2024-01-20</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="learning-footer">
+                        <div>字节跳动</div>
+                        <div class="learning-actions">
+                            <div class="action-btn">继续学习</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item">
+                    <div class="learning-header">
+                        <div class="learning-title">数据分析与可视化</div>
+                        <div class="learning-status status-in-progress">进行中</div>
+                    </div>
+                    <div class="learning-meta">
+                        <span><i class="fas fa-clock"></i> 6小时</span>
+                        <span><i class="fas fa-star"></i> 4.7</span>
+                        <span><i class="fas fa-calendar"></i> 2024-01-25</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
+                    </div>
+                    <div class="learning-footer">
+                        <div>阿里巴巴</div>
+                        <div class="learning-actions">
+                            <div class="action-btn">继续学习</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item">
+                    <div class="learning-header">
+                        <div class="learning-title">团队协作与沟通技巧</div>
+                        <div class="learning-status status-completed">已完成</div>
+                    </div>
+                    <div class="learning-meta">
+                        <span><i class="fas fa-clock"></i> 4小时</span>
+                        <span><i class="fas fa-star"></i> 4.6</span>
+                        <span><i class="fas fa-calendar"></i> 2024-01-10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="learning-footer">
+                        <div>华为技术</div>
+                        <div class="learning-actions">
+                            <div class="action-btn">查看证书</div>
+                            <div class="action-btn primary">复习</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item">
+                    <div class="learning-header">
+                        <div class="learning-title">创新创业思维训练</div>
+                        <div class="learning-status status-not-started">未开始</div>
+                    </div>
+                    <div class="learning-meta">
+                        <span><i class="fas fa-clock"></i> 5小时</span>
+                        <span><i class="fas fa-star"></i> 4.8</span>
+                        <span><i class="fas fa-calendar"></i> 2024-02-01</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="learning-footer">
+                        <div>清华大学</div>
+                        <div class="learning-actions">
+                            <div class="action-btn primary">开始学习</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <!-- <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="empty-text">暂无学习记录</div>
+                <div class="empty-subtext">开始您的第一门课程吧</div>
+            </div> -->
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                <span>活动</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
