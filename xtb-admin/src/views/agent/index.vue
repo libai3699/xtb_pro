@@ -7,6 +7,12 @@
     </div>
 
     <el-table :data="list" border>
+      <el-table-column label="头像" width="90" align="center">
+        <template #default="{ row }">
+          <el-avatar v-if="row.user?.avatar" :src="row.user.avatar" :size="42" />
+          <el-avatar v-else :size="42">{{ (row.user?.nickname || 'A').slice(0, 1) }}</el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column label="昵称" min-width="120">
         <template #default="{ row }">{{ row.user?.nickname || '-' }}</template>
       </el-table-column>
@@ -38,6 +44,24 @@
 
   <el-dialog v-model="dialogVisible" :title="dialogTitle" width="680px">
     <el-form :model="form" label-width="96px">
+      <el-form-item label="头像">
+        <div class="avatar-field">
+          <el-avatar v-if="form.avatar" :src="form.avatar" :size="64" />
+          <el-avatar v-else :size="64">A</el-avatar>
+          <div class="avatar-actions">
+            <el-upload
+              :show-file-list="false"
+              accept=".jpg,.jpeg,.png,.gif,.webp"
+              :http-request="handleAvatarUpload"
+            >
+              <el-button :loading="uploading">上传头像</el-button>
+            </el-upload>
+            <el-button v-if="form.avatar" link type="danger" @click="form.avatar = ''">清空</el-button>
+            <el-input v-model="form.avatar" placeholder="上传后会自动回填，也可手动输入图片地址" />
+          </div>
+        </div>
+      </el-form-item>
+
       <el-form-item label="登录账号">
         <el-input v-model="form.account" />
       </el-form-item>
@@ -70,9 +94,6 @@
       <el-form-item label="邀请码">
         <el-input v-model="form.inviteCode" />
       </el-form-item>
-      <el-form-item label="头像">
-        <el-input v-model="form.avatar" placeholder="https://..." />
-      </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="form.status">
           <el-option :value="0" label="待审核" />
@@ -91,7 +112,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import type { UploadRequestOptions } from 'element-plus';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { uploadImageByRequest } from '@/api/upload';
 import {
   auditAgent,
   createAgent,
@@ -104,6 +127,7 @@ import {
 
 const loading = ref(false);
 const submitting = ref(false);
+const uploading = ref(false);
 const dialogVisible = ref(false);
 const editingId = ref('');
 const list = ref<AgentItem[]>([]);
@@ -151,6 +175,19 @@ function resetForm() {
   form.avatar = '';
 }
 
+async function handleAvatarUpload(options: UploadRequestOptions) {
+  uploading.value = true;
+  try {
+    const result = await uploadImageByRequest(options);
+    form.avatar = result.url;
+    ElMessage.success('头像上传成功');
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '头像上传失败');
+  } finally {
+    uploading.value = false;
+  }
+}
+
 function openCreateDialog() {
   resetForm();
   dialogVisible.value = true;
@@ -168,7 +205,7 @@ function openEditDialog(row: AgentItem) {
   form.gradeName = row.gradeName || '';
   form.inviteCode = row.inviteCode || '';
   form.status = (row.status ?? 0) as 0 | 1 | 2;
-  form.avatar = '';
+  form.avatar = row.user?.avatar || '';
   dialogVisible.value = true;
 }
 
@@ -280,5 +317,19 @@ onMounted(fetchList);
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.avatar-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 </style>

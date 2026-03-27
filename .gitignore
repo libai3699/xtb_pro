@@ -5,6 +5,8 @@ xtb-client/node_modules/
 
 # build outputs
 xtb-server/dist/
+xtb-server/uploads/*
+!xtb-server/uploads/.gitkeep
 xtb-admin/dist/
 xtb-client/dist/
 xtb-client/unpackage/
@@ -26,4 +28,3 @@ yarn-error.log*
 Thumbs.db
 .idea/
 .vscode/
-

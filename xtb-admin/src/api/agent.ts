@@ -14,6 +14,7 @@ export interface AgentItem {
     id: string;
     account?: string;
     nickname?: string;
+    avatar?: string;
     mobile?: string;
     status: number;
   };

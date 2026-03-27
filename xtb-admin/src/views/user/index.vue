@@ -7,10 +7,16 @@
     </div>
 
     <el-table :data="list" border>
+      <el-table-column label="头像" width="90" align="center">
+        <template #default="{ row }">
+          <el-avatar v-if="row.avatar" :src="row.avatar" :size="42" />
+          <el-avatar v-else :size="42">{{ (row.nickname || 'U').slice(0, 1) }}</el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column prop="nickname" label="昵称" min-width="140" />
       <el-table-column label="登录账号" min-width="140">
         <template #default="{ row }">
-          <span>{{ row.role === 'student' ? row.account || '-' : '-' }}</span>
+          <span>{{ row.account || '-' }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="mobile" label="手机号" min-width="140" />
@@ -59,6 +65,24 @@
         <el-input v-model="form.nickname" />
       </el-form-item>
 
+      <el-form-item label="头像">
+        <div class="avatar-field">
+          <el-avatar v-if="form.avatar" :src="form.avatar" :size="64" />
+          <el-avatar v-else :size="64">U</el-avatar>
+          <div class="avatar-actions">
+            <el-upload
+              :show-file-list="false"
+              accept=".jpg,.jpeg,.png,.gif,.webp"
+              :http-request="handleAvatarUpload"
+            >
+              <el-button :loading="uploading">上传头像</el-button>
+            </el-upload>
+            <el-button v-if="form.avatar" link type="danger" @click="form.avatar = ''">清空</el-button>
+            <el-input v-model="form.avatar" placeholder="上传后会自动回填，也可手动输入图片地址" />
+          </div>
+        </div>
+      </el-form-item>
+
       <template v-if="form.role === 'student'">
         <el-form-item label="登录账号">
           <el-input v-model="form.account" placeholder="学生登录账号" />
@@ -82,9 +106,6 @@
         </el-form-item>
       </template>
 
-      <el-form-item label="头像">
-        <el-input v-model="form.avatar" placeholder="https://..." />
-      </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="form.status">
           <el-option :value="1" label="正常" />
@@ -120,7 +141,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import type { UploadRequestOptions } from 'element-plus';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { uploadImageByRequest } from '@/api/upload';
 import {
   createAppUser,
   deleteAppUser,
@@ -132,6 +155,7 @@ import {
 
 const loading = ref(false);
 const submitting = ref(false);
+const uploading = ref(false);
 const dialogVisible = ref(false);
 const editingId = ref('');
 const list = ref<AppUserItem[]>([]);
@@ -167,6 +191,19 @@ function resetForm() {
   form.majorName = '';
   form.gradeName = '';
   form.inviteCode = '';
+}
+
+async function handleAvatarUpload(options: UploadRequestOptions) {
+  uploading.value = true;
+  try {
+    const result = await uploadImageByRequest(options);
+    form.avatar = result.url;
+    ElMessage.success('头像上传成功');
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '头像上传失败');
+  } finally {
+    uploading.value = false;
+  }
 }
 
 function openCreateDialog() {
@@ -299,5 +336,19 @@ onMounted(fetchList);
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.avatar-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 </style>
