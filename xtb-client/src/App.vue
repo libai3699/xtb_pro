@@ -5,7 +5,9 @@
 <script setup lang="ts">
 </script>
 
-<style>
+<style lang="scss">
+@import "uview-plus/index.scss";
+
 page {
   background: #f5f7fb;
   color: #1f2937;

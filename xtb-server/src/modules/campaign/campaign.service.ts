@@ -36,8 +36,12 @@ export class CampaignService {
   async create(dto: CreateCampaignDto) {
     const data: Prisma.CampaignCreateInput = {
       title: dto.title,
+      campaignType: dto.campaignType,
+      targetCount: dto.targetCount,
+      location: dto.location,
       cover: dto.cover,
       description: dto.description,
+      requirement: dto.requirement,
       formConfig: dto.formConfig as Prisma.InputJsonValue | undefined,
       rewardDesc: dto.rewardDesc,
       startTime: dto.startTime ? new Date(dto.startTime) : undefined,
@@ -65,7 +69,12 @@ export class CampaignService {
       select: {
         id: true,
         title: true,
+        campaignType: true,
+        targetCount: true,
+        location: true,
         cover: true,
+        description: true,
+        requirement: true,
         rewardDesc: true,
         startTime: true,
         endTime: true,

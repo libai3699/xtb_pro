@@ -6,7 +6,7 @@
       :class="['tab-item', item.key === props.current ? 'active' : '']"
       @click="go(item.path)"
     >
-      <view class="tab-icon">{{ item.key === props.current ? item.activeIcon : item.icon }}</view>
+      <up-icon :name="item.icon" :size="22" :color="item.key === props.current ? '#6e79e5' : '#94a3b8'" />
       <view class="tab-label">{{ item.label }}</view>
     </view>
   </view>
@@ -22,18 +22,18 @@ const userStore = useUserStore();
 const items = computed(() => {
   if (userStore.role === 'agent') {
     return [
-      { key: 'home', label: '工作台', path: '/pages/agent/home', icon: '⌂', activeIcon: '⌂' },
-      { key: 'campaign', label: '活动', path: '/pages/campaign/list', icon: '◫', activeIcon: '◩' },
-      { key: 'stats', label: '数据', path: '/pages/agent/stats', icon: '◔', activeIcon: '◕' },
-      { key: 'my', label: '我的', path: '/pages/my/index', icon: '○', activeIcon: '◉' },
+      { key: 'home', label: '首页', path: '/pages/agent/home', icon: 'home-fill' },
+      { key: 'campaign', label: '任务', path: '/pages/campaign/list', icon: 'list-dot' },
+      { key: 'stats', label: '数据', path: '/pages/agent/stats', icon: 'grid-fill' },
+      { key: 'my', label: '我的', path: '/pages/my/index', icon: 'account-fill' },
     ];
   }
 
   return [
-    { key: 'home', label: '广场', path: '/pages/student/home', icon: '⌂', activeIcon: '⌂' },
-    { key: 'reward', label: '奖励', path: '/pages/reward/index', icon: '✦', activeIcon: '✸' },
-    { key: 'news', label: '资讯', path: '/pages/news/list', icon: '◨', activeIcon: '▣' },
-    { key: 'my', label: '我的', path: '/pages/my/index', icon: '○', activeIcon: '◉' },
+    { key: 'home', label: '广场', path: '/pages/student/home', icon: 'home-fill' },
+    { key: 'reward', label: '奖励', path: '/pages/reward/index', icon: 'gift-fill' },
+    { key: 'news', label: '资讯', path: '/pages/news/list', icon: 'file-text-fill' },
+    { key: 'my', label: '我的', path: '/pages/my/index', icon: 'account-fill' },
   ];
 });
 
@@ -58,23 +58,25 @@ function go(path: string) {
 
 .tab-item {
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
   padding: 14rpx 8rpx 16rpx;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .tab-item.active {
-  color: #0f766e;
-  font-weight: 700;
-}
-
-.tab-icon {
-  font-size: 34rpx;
-  line-height: 1;
+  color: #6e79e5;
 }
 
 .tab-label {
-  margin-top: 6rpx;
   font-size: 24rpx;
+  font-weight: 500;
+}
+
+.tab-item.active .tab-label {
+  font-weight: 700;
 }
 </style>

@@ -111,4 +111,51 @@ export class UploadController {
       },
     };
   }
+
+  @ApiOperation({ summary: '客户端上传图片' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post('app/upload/image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          cb(null, ensureUploadDir());
+        },
+        filename: (_req, file, cb) => {
+          cb(null, randomName(file.originalname));
+        },
+      }),
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: (_req, file, cb) => {
+        const ext = extname(file.originalname || '').toLowerCase();
+        const mime = (file.mimetype || '').toLowerCase();
+        const allowExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+        const allowMime = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (!allowExt.includes(ext) || !allowMime.includes(mime)) {
+          cb(new BadRequestException('仅支持 jpg、png、gif、webp 图片'), false);
+          return;
+        }
+
+        cb(null, true);
+      },
+    }),
+  )
+  uploadAppImage(@UploadedFile() file: Express.Multer.File | undefined, @Req() req: Request) {
+    return this.uploadImage(file, req);
+  }
 }

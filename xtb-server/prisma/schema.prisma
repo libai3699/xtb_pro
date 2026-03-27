@@ -77,8 +77,12 @@ model AgentProfile {
 model Campaign {
   id          BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
   title       String          @db.VarChar(100)
+  campaignType String?        @map("campaign_type") @db.VarChar(30)
+  targetCount Int?            @map("target_count")
+  location    String?         @db.VarChar(120)
   cover       String?         @db.VarChar(255)
   description String?         @db.Text
+  requirement String?         @db.Text
   formConfig  Json?           @map("form_config")
   rewardDesc  String?         @map("reward_desc") @db.VarChar(255)
   startTime   DateTime?       @map("start_time") @db.DateTime(0)

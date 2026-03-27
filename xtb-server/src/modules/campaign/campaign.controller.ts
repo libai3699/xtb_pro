@@ -18,6 +18,14 @@ export class CampaignController {
     return this.campaignService.create(dto);
   }
 
+  @Post('app/campaign/create')
+  createByApp(@Body() dto: CreateCampaignDto) {
+    return this.campaignService.create({
+      ...dto,
+      status: 0,
+    });
+  }
+
   @Get('app/campaign/list')
   getAppList() {
     return this.campaignService.getAppList();

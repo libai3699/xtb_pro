@@ -3,8 +3,12 @@ import { request } from './request';
 export interface CampaignItem {
   id: string;
   title: string;
+  campaignType?: string;
+  targetCount?: number;
+  location?: string;
   cover?: string;
   description?: string;
+  requirement?: string;
   rewardDesc?: string;
   status: number;
   createdAt: string;
@@ -19,8 +23,12 @@ export interface CampaignItem {
 
 export interface CampaignPayload {
   title: string;
+  campaignType?: string;
+  targetCount?: number;
+  location?: string;
   cover?: string;
   description?: string;
+  requirement?: string;
   rewardDesc?: string;
   formConfig?: Record<string, unknown>;
   startTime?: string;
@@ -38,4 +46,3 @@ export function createCampaign(payload: CampaignPayload) {
     body: payload,
   });
 }
-

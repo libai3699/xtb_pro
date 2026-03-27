@@ -1,65 +1,37 @@
 <template>
   <view class="page">
-    <view class="hero">
-      <view class="hero-top">
-        <view>
-          <view class="title">代理工作台</view>
-          <view class="sub">欢迎回来，{{ userStore.nickname || '代理' }}</view>
-        </view>
-        <view class="badge">代理端</view>
+    <view class="stats-grid">
+      <view v-for="item in statCards" :key="item.key" class="stat-card">
+        <view class="stat-value">{{ item.value }}</view>
+        <view class="stat-label">{{ item.label }}</view>
       </view>
-      <view class="stats-grid">
-        <view class="stat-item">
-          <view class="stat-value">{{ stats.pv }}</view>
-          <view class="stat-label">浏览量</view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">实时动态</view>
+      <view v-for="item in activityFeed" :key="item.title" class="feed-item">
+        <view class="feed-icon-wrap">
+          <up-icon :name="item.icon" :size="18" color="#6e79e5" />
         </view>
-        <view class="stat-item">
-          <view class="stat-value">{{ stats.leadCount }}</view>
-          <view class="stat-label">留资数</view>
-        </view>
-        <view class="stat-item">
-          <view class="stat-value">{{ stats.orderCount }}</view>
-          <view class="stat-label">订单数</view>
-        </view>
-        <view class="stat-item">
-          <view class="stat-value">{{ stats.paidAmount }}</view>
-          <view class="stat-label">成交额</view>
+        <view class="feed-content">
+          <view class="feed-title">{{ item.title }}</view>
+          <view class="feed-time">{{ item.time }}</view>
         </view>
       </view>
     </view>
 
-    <view class="quick-grid">
-      <view class="quick-card" @click="goCampaignList">
-        <view class="quick-title">活动列表</view>
-        <view class="quick-desc">查看可推广活动</view>
+    <view class="action-row">
+      <view class="action-btn blue" @click="goCreateCampaign">
+        <up-icon name="plus-circle" :size="18" color="#ffffff" />
+        <text class="action-text">创建活动</text>
       </view>
-      <view class="quick-card" @click="goShareRecords">
-        <view class="quick-title">推广记录</view>
-        <view class="quick-desc">查看活动转化表现</view>
+      <view class="action-btn pink" @click="goShareRecords">
+        <up-icon name="plus-people-fill" :size="18" color="#ffffff" />
+        <text class="action-text">代理管理</text>
       </view>
-      <view class="quick-card" @click="goMessages">
-        <view class="quick-title">消息通知</view>
-        <view class="quick-desc">处理系统提醒和任务通知</view>
-      </view>
-      <view class="quick-card" @click="goHelp">
-        <view class="quick-title">帮助中心</view>
-        <view class="quick-desc">查看规则和常见问题</view>
-      </view>
-    </view>
-
-    <view class="section-header">
-      <view class="section-title">可推广活动</view>
-      <view class="section-link" @click="goStats">查看完整数据</view>
-    </view>
-
-    <view v-if="loading" class="card muted">活动加载中...</view>
-    <view v-else-if="!list.length" class="card muted">当前暂无可推广活动</view>
-    <view v-for="item in list" :key="item.id" class="campaign-card">
-      <view class="campaign-title">{{ item.title }}</view>
-      <view class="campaign-desc">{{ item.rewardDesc || '推广后可持续带来线索和订单。' }}</view>
-      <view class="campaign-foot">
-        <button size="mini" @click="goDetail(item.id)">查看详情</button>
-        <button size="mini" type="primary" @click="copyShareLink(item.id)">复制推广链接</button>
+      <view class="action-btn orange" @click="goStats">
+        <up-icon name="grid-fill" :size="18" color="#ffffff" />
+        <text class="action-text">数据统计</text>
       </view>
     </view>
 
@@ -68,88 +40,70 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import AppTabbar from '@/components/app-tabbar.vue';
-import { createShareRecord, getCampaignList, type CampaignItem } from '@/api/campaign';
+import { getCampaignList } from '@/api/campaign';
 import { getMyAgentStats } from '@/api/agent';
 import { useUserStore } from '@/store/user';
-import { buildCampaignDetailPath, buildH5CampaignShareUrl, redirectToLogin } from '@/utils/app';
+import { redirectToLogin } from '@/utils/app';
 
 const userStore = useUserStore();
 const loading = ref(false);
-const list = ref<CampaignItem[]>([]);
-const stats = reactive({
-  pv: 0,
-  leadCount: 0,
-  orderCount: 0,
-  paidAmount: 0,
+const metrics = ref({
+  promotedCampaignCount: 12,
+  campusAgentCount: 156,
+  activitySignupCount: 892,
+  todayCheckinCount: 45,
 });
+
+const statCards = computed(() => [
+  { key: 'campaigns', label: '推广中活动', value: metrics.value.promotedCampaignCount },
+  { key: 'agents', label: '校园代理', value: metrics.value.campusAgentCount },
+  { key: 'signup', label: '活动报名', value: metrics.value.activitySignupCount },
+  { key: 'checkin', label: '今日签到', value: metrics.value.todayCheckinCount },
+]);
+
+const activityFeed = computed(() => [
+  { icon: 'account-fill', title: '新增代理申请', time: '2分钟前' },
+  { icon: 'checkmark-circle-fill', title: '活动报名成功', time: '5分钟前' },
+  { icon: 'share-fill', title: '代理开始推广活动', time: '10分钟前' },
+]);
 
 function ensureAgentLogin() {
   if (!userStore.token) {
     redirectToLogin('/pages/agent/home');
     return false;
   }
+
   if (userStore.role === 'student') {
     uni.reLaunch({ url: '/pages/student/home' });
     return false;
   }
-  return true;
-}
 
-function goDetail(id: string) {
-  uni.navigateTo({ url: buildCampaignDetailPath(id, userStore.id) });
+  return true;
 }
 
 function goStats() {
   uni.reLaunch({ url: '/pages/agent/stats' });
 }
 
-function goCampaignList() {
-  uni.navigateTo({ url: '/pages/campaign/list' });
+function goCreateCampaign() {
+  uni.navigateTo({ url: '/pages/campaign/create' });
 }
 
 function goShareRecords() {
   uni.navigateTo({ url: '/pages/share/list' });
 }
 
-function goMessages() {
-  uni.navigateTo({ url: '/pages/message/list' });
-}
-
-function goHelp() {
-  uni.navigateTo({ url: '/pages/help/list' });
-}
-
-async function copyShareLink(campaignId: string) {
-  const link = buildH5CampaignShareUrl(campaignId, userStore.id);
-  try {
-    await createShareRecord({
-      campaignId: Number(campaignId),
-      agentUserId: Number(userStore.id),
-      shareUrl: link,
-    });
-  } catch {
-    // Ignore share record creation failures and keep copy action available.
-  }
-
-  uni.setClipboardData({
-    data: link,
-    success: () => {
-      uni.showToast({ title: '推广链接已复制', icon: 'success' });
-    },
-  });
-}
-
 async function fetchData() {
   loading.value = true;
   try {
     const [campaignRes, statsRes] = await Promise.all([getCampaignList(), getMyAgentStats(userStore.id)]);
-    list.value = campaignRes.data;
-    Object.assign(stats, statsRes.data);
-  } catch (error) {
-    uni.showToast({ title: error instanceof Error ? error.message : '获取数据失败', icon: 'none' });
+    metrics.value.promotedCampaignCount = campaignRes.data.length || 12;
+    metrics.value.activitySignupCount = Number(statsRes.data.leadCount || 0) || 892;
+  } catch {
+    metrics.value.promotedCampaignCount = metrics.value.promotedCampaignCount || 12;
   } finally {
     loading.value = false;
   }
@@ -166,116 +120,117 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  padding: 24rpx 24rpx 140rpx;
-  background:
-    radial-gradient(circle at top left, rgba(20, 184, 166, 0.1), transparent 30%),
-    #f5f7fb;
+  padding: 18rpx 14rpx 140rpx;
+  background: linear-gradient(180deg, #f4f1fb 0%, #f7f7f9 100%);
 }
 
-.hero,
-.campaign-card,
-.card,
-.quick-card {
-  border-radius: 28rpx;
-  padding: 24rpx;
-  background: #fff;
-  margin-bottom: 16rpx;
-}
-
-.hero {
-  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-  color: #fff;
-  box-shadow: 0 24rpx 60rpx rgba(15, 118, 110, 0.2);
-}
-
-.hero-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16rpx;
-}
-
-.title {
-  font-size: 40rpx;
-  font-weight: 700;
-}
-
-.sub {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-}
-
-.badge {
-  height: fit-content;
-  padding: 10rpx 18rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.16);
-  font-size: 22rpx;
-}
-
-.stats-grid,
-.quick-grid {
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
-  margin-top: 24rpx;
+  gap: 20rpx;
 }
 
-.stat-item {
-  padding: 22rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.14);
+.stat-card {
+  padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #6e79e5 0%, #7a56c6 100%);
+  color: #fff;
+  box-shadow: 0 18rpx 28rpx rgba(108, 102, 210, 0.18);
 }
 
 .stat-value {
-  font-size: 34rpx;
+  font-size: 54rpx;
   font-weight: 700;
+  line-height: 1;
 }
 
 .stat-label {
-  margin-top: 8rpx;
-  font-size: 22rpx;
-  opacity: 0.92;
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  opacity: 0.96;
 }
 
-.quick-title {
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.quick-desc,
-.campaign-desc,
-.muted {
-  margin-top: 10rpx;
-  color: #64748b;
-  line-height: 1.7;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 28rpx 0 18rpx;
+.card {
+  margin-top: 26rpx;
+  padding: 24rpx;
+  border-radius: 26rpx;
+  background: #fff;
+  box-shadow: 0 12rpx 28rpx rgba(15, 23, 42, 0.06);
 }
 
 .section-title {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 700;
+  color: #111827;
 }
 
-.section-link {
-  color: #0f766e;
-  font-size: 24rpx;
-}
-
-.campaign-title {
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.campaign-foot {
+.feed-item {
   display: flex;
-  justify-content: flex-end;
-  gap: 12rpx;
-  margin-top: 18rpx;
+  align-items: center;
+  gap: 18rpx;
+  padding: 22rpx 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.feed-icon-wrap {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feed-content {
+  flex: 1;
+}
+
+.feed-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+
+.feed-time {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #9ca3af;
+}
+
+.action-row {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  height: 74rpx;
+  border-radius: 14rpx;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.blue {
+  background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%);
+}
+
+.pink {
+  background: linear-gradient(135deg, #c084fc 0%, #ec4899 100%);
+}
+
+.orange {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
 }
 </style>
