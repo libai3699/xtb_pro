@@ -1,57 +1,49 @@
 <template>
   <view class="page">
     <view class="hero">
-      <view class="eyebrow">校推宝 Pro H5</view>
-      <view class="title">招生推广与报名闭环</view>
-      <view class="desc">学生端和代理端统一使用账号密码登录，注册字段和后台管理保持一致。</view>
-    </view>
-
-    <view class="panel">
-      <view class="panel-title">选择身份</view>
-      <view class="role-row">
-        <view :class="['role-card', form.role === 'student' ? 'active student' : '']" @click="switchRole('student')">
-          <view class="role-name">学生端</view>
-          <view class="role-desc">报名活动、提交留资、查看订单</view>
-        </view>
-        <view :class="['role-card', form.role === 'agent' ? 'active agent' : '']" @click="switchRole('agent')">
-          <view class="role-name">代理端</view>
-          <view class="role-desc">推广活动、查看数据、管理个人推广</view>
-        </view>
+      <view class="hero-top">
+        <view class="hero-badge">校推宝Pro</view>
+        <view class="hero-role">{{ form.role === 'student' ? '学生端' : '代理端' }}</view>
       </view>
+      <view class="hero-title">校园活动增长与报名闭环</view>
+      <view class="hero-desc">统一账号体系，按学生端和代理端切换登录注册，注册字段和后台管理保持一致。</view>
     </view>
 
-    <view class="panel">
-      <view class="panel-title">账号入口</view>
+    <view class="auth-card">
+      <view class="role-tabs">
+        <view :class="['role-tab', form.role === 'student' ? 'active' : '']" @click="switchRole('student')">学生端</view>
+        <view :class="['role-tab', form.role === 'agent' ? 'active' : '']" @click="switchRole('agent')">代理端</view>
+      </view>
+
       <view class="mode-tabs">
         <view :class="['mode-tab', mode === 'login' ? 'active' : '']" @click="mode = 'login'">登录</view>
         <view :class="['mode-tab', mode === 'register' ? 'active' : '']" @click="mode = 'register'">注册</view>
       </view>
 
-      <input v-model="form.account" class="input" placeholder="请输入登录账号" />
-      <input v-model="form.password" class="input" password placeholder="请输入登录密码" />
+      <view class="form-card">
+        <input v-model="form.account" class="input" placeholder="请输入登录账号" />
+        <input v-model="form.password" class="input" password placeholder="请输入登录密码" />
 
-      <template v-if="mode === 'register'">
-        <input v-model="form.nickname" class="input" placeholder="请输入昵称" />
-        <input v-model="form.mobile" class="input" :placeholder="form.role === 'agent' ? '请输入手机号' : '手机号选填'" />
+        <template v-if="mode === 'register'">
+          <input v-model="form.nickname" class="input" placeholder="请输入昵称" />
+          <input v-model="form.mobile" class="input" :placeholder="form.role === 'agent' ? '请输入手机号' : '手机号选填'" />
 
-        <template v-if="form.role === 'agent'">
-          <input v-model="form.realName" class="input" placeholder="请输入真实姓名" />
-          <input v-model="form.schoolName" class="input" placeholder="请输入学校名称" />
-          <input v-model="form.majorName" class="input" placeholder="请输入专业名称" />
-          <input v-model="form.gradeName" class="input" placeholder="请输入年级" />
-          <input v-model="form.inviteCode" class="input" placeholder="邀请码选填" />
+          <template v-if="form.role === 'agent'">
+            <input v-model="form.realName" class="input" placeholder="请输入真实姓名" />
+            <input v-model="form.schoolName" class="input" placeholder="请输入学校名称" />
+            <input v-model="form.majorName" class="input" placeholder="请输入专业名称" />
+            <input v-model="form.gradeName" class="input" placeholder="请输入年级" />
+            <input v-model="form.inviteCode" class="input" placeholder="邀请码选填" />
+          </template>
         </template>
-      </template>
 
-      <button v-if="mode === 'login'" class="primary-btn" type="primary" @click="handleLogin">立即登录</button>
-      <button v-else class="primary-btn" type="primary" @click="handleRegister">立即注册</button>
+        <button v-if="mode === 'login'" class="submit-btn" type="primary" @click="handleLogin">立即登录</button>
+        <button v-else class="submit-btn" type="primary" @click="handleRegister">立即注册</button>
 
-      <view class="tips">
-        <view v-if="form.role === 'student' && mode === 'login'">学生登录必填：账号、密码。</view>
-        <view v-if="form.role === 'student' && mode === 'register'">学生注册必填：账号、密码、昵称；手机号选填。</view>
-        <view v-if="form.role === 'agent' && mode === 'login'">代理登录必填：账号、密码。</view>
-        <view v-if="form.role === 'agent' && mode === 'register'">
-          代理注册必填：账号、密码、昵称、手机号、真实姓名；学校、专业、年级、邀请码可补充。
+        <view class="tips">
+          <view v-if="mode === 'login'">登录必填：账号、密码</view>
+          <view v-else-if="form.role === 'student'">学生注册必填：账号、密码、昵称；手机号选填</view>
+          <view v-else>代理注册必填：账号、密码、昵称、手机号、真实姓名</view>
         </view>
       </view>
     </view>
@@ -206,119 +198,99 @@ onShow(() => {
 .page {
   min-height: 100vh;
   padding: 28rpx;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 32%),
-    linear-gradient(180deg, #f5fbfa 0%, #f4f7fb 100%);
+  background: linear-gradient(180deg, #eef1ff 0%, #f7f8fc 42%, #f5f7fb 100%);
 }
 
 .hero {
-  border-radius: 28rpx;
-  padding: 40rpx 32rpx;
+  border-radius: 32rpx;
+  padding: 34rpx 30rpx 44rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 55%, #22c55e 100%);
-  box-shadow: 0 24rpx 60rpx rgba(15, 118, 110, 0.24);
-  margin-bottom: 24rpx;
+  box-shadow: 0 24rpx 60rpx rgba(102, 126, 234, 0.28);
 }
 
-.eyebrow {
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-badge,
+.hero-role {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.16);
   font-size: 22rpx;
-  opacity: 0.9;
-  letter-spacing: 2rpx;
 }
 
-.title {
-  margin-top: 12rpx;
-  font-size: 44rpx;
+.hero-title {
+  margin-top: 22rpx;
+  font-size: 46rpx;
   font-weight: 700;
+  line-height: 1.25;
 }
 
-.desc {
+.hero-desc {
   margin-top: 16rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
   line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.panel {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 24rpx;
-  padding: 28rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 20rpx 50rpx rgba(15, 23, 42, 0.06);
+.auth-card {
+  margin-top: -24rpx;
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 26rpx;
+  box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.08);
 }
 
-.panel-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  margin-bottom: 18rpx;
-}
-
+.role-tabs,
 .mode-tabs {
   display: flex;
   gap: 12rpx;
-  margin-bottom: 18rpx;
 }
 
+.mode-tabs {
+  margin-top: 18rpx;
+}
+
+.role-tab,
 .mode-tab {
   flex: 1;
   text-align: center;
   padding: 18rpx 0;
-  border-radius: 16rpx;
-  background: #f1f5f9;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  background: #f3f4f6;
   color: #64748b;
 }
 
+.role-tab.active,
 .mode-tab.active {
-  background: #0f766e;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   font-weight: 700;
 }
 
-.role-row {
-  display: flex;
-  gap: 16rpx;
-}
-
-.role-card {
-  flex: 1;
-  padding: 24rpx;
-  border-radius: 20rpx;
-  background: #f8fafc;
-  border: 2rpx solid transparent;
-}
-
-.role-card.active.student {
-  border-color: #f97316;
-  background: #fff7ed;
-}
-
-.role-card.active.agent {
-  border-color: #0f766e;
-  background: #f0fdfa;
-}
-
-.role-name {
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.role-desc {
-  margin-top: 10rpx;
-  color: #64748b;
-  line-height: 1.6;
-  font-size: 24rpx;
+.form-card {
+  margin-top: 20rpx;
+  padding: 12rpx 0 6rpx;
 }
 
 .input {
-  height: 88rpx;
+  height: 92rpx;
   background: #f8fafc;
   border-radius: 18rpx;
   padding: 0 24rpx;
   margin-bottom: 16rpx;
+  font-size: 26rpx;
 }
 
-.primary-btn {
-  margin-top: 8rpx;
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
+.submit-btn {
+  margin-top: 10rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 18rpx;
 }
 
 .tips {

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `content_article` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `type` varchar(20) NOT NULL,
   `title` varchar(120) NOT NULL,
   `summary` varchar(255) DEFAULT NULL,
@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS `content_article` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_message` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
   `type` varchar(20) NOT NULL DEFAULT 'system',
   `title` varchar(120) NOT NULL,
   `content` varchar(500) NOT NULL,
   `biz_type` varchar(30) DEFAULT NULL,
-  `biz_id` bigint unsigned DEFAULT NULL,
+  `biz_id` bigint DEFAULT NULL,
   `is_read` tinyint NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `user_message` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `reward_goods` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `title` varchar(120) NOT NULL,
   `cover` varchar(255) DEFAULT NULL,
   `points` int NOT NULL DEFAULT 0,
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS `reward_goods` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `reward_redeem_order` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `order_no` varchar(50) NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `goods_id` bigint unsigned NOT NULL,
+  `user_id` bigint NOT NULL,
+  `goods_id` bigint NOT NULL,
   `points` int NOT NULL DEFAULT 0,
   `status` tinyint NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -64,14 +64,14 @@ CREATE TABLE IF NOT EXISTS `reward_redeem_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `point_record` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
   `type` varchar(20) NOT NULL,
   `change_value` int NOT NULL,
   `balance_value` int NOT NULL DEFAULT 0,
   `remark` varchar(255) DEFAULT NULL,
   `biz_type` varchar(30) DEFAULT NULL,
-  `biz_id` bigint unsigned DEFAULT NULL,
+  `biz_id` bigint DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_point_record_user_created` (`user_id`, `created_at`),
@@ -79,10 +79,10 @@ CREATE TABLE IF NOT EXISTS `point_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_favorite` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
   `target_type` varchar(20) NOT NULL,
-  `target_id` bigint unsigned NOT NULL,
+  `target_id` bigint NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_user_favorite` (`user_id`, `target_type`, `target_id`),
@@ -91,9 +91,9 @@ CREATE TABLE IF NOT EXISTS `user_favorite` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_certificate` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `product_id` bigint unsigned DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `product_id` bigint DEFAULT NULL,
   `title` varchar(120) NOT NULL,
   `issuer` varchar(120) DEFAULT NULL,
   `cover` varchar(255) DEFAULT NULL,
@@ -109,9 +109,9 @@ CREATE TABLE IF NOT EXISTS `user_certificate` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `learning_record` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `product_id` bigint unsigned DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `product_id` bigint DEFAULT NULL,
   `title` varchar(120) NOT NULL,
   `cover` varchar(255) DEFAULT NULL,
   `progress` int NOT NULL DEFAULT 0,
@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS `learning_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_feedback` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint DEFAULT NULL,
   `type` varchar(20) NOT NULL DEFAULT 'suggestion',
   `content` varchar(1000) NOT NULL,
   `contact` varchar(100) DEFAULT NULL,
@@ -141,8 +141,8 @@ CREATE TABLE IF NOT EXISTS `user_feedback` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `agent_review` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `agent_user_id` bigint unsigned NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `agent_user_id` bigint NOT NULL,
   `score` tinyint NOT NULL DEFAULT 5,
   `content` varchar(255) DEFAULT NULL,
   `status` tinyint NOT NULL DEFAULT 1,
